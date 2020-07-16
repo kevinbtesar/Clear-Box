@@ -7,7 +7,7 @@ It is Flutter App with Login Register with Shared Preference (You won't be logge
 Web Side Files :
 
     api_verification.php
-    conn.php
+    connection.php
     sql-queries to be executed
 
 * Find and replace website URL with your URL

@@ -7,20 +7,24 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'constants.dart' as Constants;
+//
+//
+//
+// LOGIN - BEGIN /////////////////////////////////////////////////////////////////////////////
 
 class Login extends StatefulWidget {
   @override
   _LoginState createState() => _LoginState();
 }
 
-enum LoginStatus { notSignIn, signIn }
+//enum LoginStatus { notSignIn, signIn }
 
 class _LoginState extends State<Login> {
-  LoginStatus _loginStatus = LoginStatus.notSignIn;
+  //LoginStatus _loginStatus = LoginStatus.notSignIn;
+  bool _loggedIn = false;
+  bool _secureText = true;
   String email, password;
   final _key = new GlobalKey<FormState>();
-
-  bool _secureText = true;
 
   showHide() {
     setState(() {
@@ -38,34 +42,41 @@ class _LoginState extends State<Login> {
 
   login() async {
     final response = await http.post(
-        "https://clearboxlending.com/Flutter-Login-Register-API/api_verification.php",
+        Constants.API_BASE_URL +
+            Constants.API_VERIFICATION +
+            "?" +
+            Constants.API_URL_KEY +
+            "=" +
+            Constants.API_URL_VALUE,
         body: {
           "action_flag": 1.toString(),
           "email": email,
           "password": password,
-          "fcm_token": "test_fcm_token"
+          //"fcm_token": "test_fcm_token"
         });
 
     final data = jsonDecode(response.body);
-    int value = data['value'];
-    String message = data['message'];
+    String apiStatus = data['api_status'];
+    String apiMessage = data['api_message'];
     email = data['email'];
     String firstName = data['first_name'];
     String lastName = data['last_name'];
-    String id = data['id'];
+    String id = data['id'].toString();
+    String phone = data['phone'];
+    int userStatus = data['user_status'];
 
-    if (value == 1) {
+    if (apiStatus == 'success') {
       setState(() {
-        _loginStatus = LoginStatus.signIn;
-        savePref(value, email, firstName, lastName, id);
+        //_loginStatus = LoginStatus.signIn;
+        _loggedIn = true;
+
+        savePref(/*1,*/ email, firstName, lastName, id);
       });
-      print(message);
-      loginToast(message);
     } else {
       print("fail");
-      print(message);
-      loginToast(message);
     }
+    print(apiMessage);
+    loginToast(apiMessage);
   }
 
   loginToast(String toast) {
@@ -78,11 +89,12 @@ class _LoginState extends State<Login> {
         textColor: Colors.white);
   }
 
-  savePref(int value, String email, String firstName, String lastName,
+  savePref(/*int value,*/ String email, String firstName, String lastName,
       String id) async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     setState(() {
-      preferences.setInt("value", value);
+      //preferences.setInt("value", value);
+      preferences.setBool("logged_in", _loggedIn);
       preferences.setString("first_name", firstName);
       preferences.setString("last_name", lastName);
       preferences.setString("email", email);
@@ -91,29 +103,34 @@ class _LoginState extends State<Login> {
     });
   }
 
-  var value;
+  //var value;
 
   getPref() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     setState(() {
-      value = preferences.getInt("value");
+      //value = preferences.getInt("value");
+      _loggedIn = preferences.getBool("logged_in");
 
-      _loginStatus = value == 1 ? LoginStatus.signIn : LoginStatus.notSignIn;
+      //_loginStatus = value == 1 ? LoginStatus.signIn : LoginStatus.notSignIn;
     });
   }
 
   signOut() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     setState(() {
-      preferences.setInt("value", null);
+      //preferences.setInt("value", null);
+      preferences.setBool("logged_in", null);
       preferences.setString("first_name", null);
       preferences.setString("last_name", null);
       preferences.setString("email", null);
       preferences.setString("id", null);
 
       preferences.commit();
-      _loginStatus = LoginStatus.notSignIn;
+      //_loginStatus = LoginStatus.notSignIn;
+      _loggedIn = false;
     });
+
+    loginToast(Constants.LOGOUT_SUCCESS);
   }
 
   @override
@@ -125,8 +142,10 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
-    switch (_loginStatus) {
-      case LoginStatus.notSignIn:
+    //switch (_loginStatus) {
+    switch (_loggedIn) {
+      //case LoginStatus.notSignIn:
+      case false:
         return Scaffold(
           backgroundColor: Colors.black,
           body: Center(
@@ -167,7 +186,7 @@ class _LoginState extends State<Login> {
                             child: TextFormField(
                               validator: (e) {
                                 if (e.isEmpty) {
-                                  return "Please Insert Email";
+                                  return Constants.EMAIL_ERROR_EMPTY;
                                 }
                               },
                               onSaved: (e) => email = e,
@@ -194,7 +213,7 @@ class _LoginState extends State<Login> {
                             child: TextFormField(
                               validator: (e) {
                                 if (e.isEmpty) {
-                                  return "Password Can't be Empty";
+                                  return Constants.PASS_ERROR_EMPTY;
                                 }
                               },
                               obscureText: _secureText,
@@ -266,7 +285,7 @@ class _LoginState extends State<Login> {
                                         borderRadius:
                                             BorderRadius.circular(15.0)),
                                     child: Text(
-                                      "Go to Register",
+                                      Constants.GO_TO_REGISTER,
                                       style: TextStyle(fontSize: 18.0),
                                     ),
                                     textColor: Colors.white,
@@ -292,13 +311,18 @@ class _LoginState extends State<Login> {
         );
         break;
 
-      case LoginStatus.signIn:
+      //case LoginStatus.signIn:
+      case true:
         return MainMenu(signOut);
 //        return ProfilePage(signOut);
         break;
     }
   }
 }
+
+// LOGIN - END /////////////////////////////////////////////////////////////////////////////////
+
+// REGISTER - BEGIN /////////////////////////////////////////////////////////////////////////////
 
 class Register extends StatefulWidget {
   @override
@@ -327,9 +351,14 @@ class _RegisterState extends State<Register> {
 
   save() async {
     final response = await http.post(
-        "https://clearboxlending.com/Flutter-Login-Register-API/api_verification.php",
+        Constants.API_BASE_URL +
+            Constants.API_VERIFICATION +
+            "?" +
+            Constants.API_URL_KEY +
+            "=" +
+            Constants.API_URL_VALUE,
         body: {
-          //.post(Constants.API_BASE_URL + Constants.API_VERFICATION, body: {
+          //.post(Constants.API_BASE_URL + Constants.API_VERIFICATION, body: {
           "action_flag": 2.toString(),
           "first_name": firstName,
           "last_name": lastName,
@@ -346,9 +375,9 @@ class _RegisterState extends State<Register> {
      * Message field will contain success or fail message.
      */
 
-    String message = data['message'];
-    String status = data['status'];
-    if (status != 'fail') {
+    String apiMessage = data['api_message'];
+    String apiStatus = data['api_status'];
+    if (apiStatus != 'fail') {
       setState(() {
         Navigator.pop(context);
       });
@@ -357,7 +386,7 @@ class _RegisterState extends State<Register> {
       //registerToast(message);
     }
     //print(message);
-    registerToast(message);
+    registerToast(apiMessage);
   }
 
   registerToast(String toast) {
@@ -589,6 +618,10 @@ class _RegisterState extends State<Register> {
   }
 }
 
+// REGISTER - END /////////////////////////////////////////////////////////////////////////////////
+
+// MainMenu - BEGIN /////////////////////////////////////////////////////////////////////////////
+
 class MainMenu extends StatefulWidget {
   final VoidCallback signOut;
 
@@ -647,7 +680,7 @@ class _MainMenuState extends State<MainMenu> {
       ),
       body: Center(
         child: Text(
-          "WelCome",
+          "Welcome",
           style: TextStyle(fontSize: 30.0, color: Colors.blue),
         ),
       ),
