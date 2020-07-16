@@ -647,10 +647,12 @@ class _MainMenuState extends State<MainMenu> {
   getPref() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     setState(() {
-      id = preferences.getString("id");
-      email = preferences.getString("email");
-      first_name = preferences.getString("first_name");
-      last_name = preferences.getString("last_name");
+      if (preferences.containsKey("logged_in")) {
+        id = preferences.getString("id");
+        email = preferences.getString("email");
+        first_name = preferences.getString("first_name");
+        last_name = preferences.getString("last_name");
+      }
     });
     print("id" + id);
     print("email" + email);
