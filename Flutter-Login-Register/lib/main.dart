@@ -1,7 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_login/sharedloginregister.dart';
+
+//import 'package:flutter_login/sharedloginregister.dart';
+import 'screens/login.dart';
 
 class MyHttpOverrides extends HttpOverrides {
   @override
@@ -20,6 +22,6 @@ void main() {
   HttpOverrides.global = new MyHttpOverrides();
 
   runApp(new MaterialApp(
-    home: MainMenu(null),
+    home: Login(),
   ));
 }

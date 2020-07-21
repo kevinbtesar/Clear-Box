@@ -6,7 +6,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'constants.dart' as Constants;
+import '../lib/helpers/constants.dart' as Constants;
 //
 //
 //
@@ -137,7 +137,8 @@ class _LoginState extends State<Login> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    getPref();
+
+    getPref(); // Call getPref() method
   }
 
   @override
@@ -632,9 +633,14 @@ class MainMenu extends StatefulWidget {
 }
 
 class _MainMenuState extends State<MainMenu> {
-  signOut() {
+  signOut() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+
     setState(() {
-      widget.signOut();
+      preferences.setString("id", null);
+      preferences.commit();
+
+      //widget.signOut();
     });
   }
 
