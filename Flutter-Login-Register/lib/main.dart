@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
-//import 'package:flutter_login/sharedloginregister.dart';
 import 'screens/login.dart';
 
 class MyHttpOverrides extends HttpOverrides {

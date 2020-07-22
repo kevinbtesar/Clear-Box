@@ -23,8 +23,6 @@ class MainMenuState extends State<MainMenu> {
 
   //signOut(BuildContext context) async {
   signOut(SharedPreferences preferences) {
-    //SharedPreferences preferences = await SharedPreferences.getInstance();
-
     setState(() {
       preferences.setBool("logged_in", false);
       preferences.setString("id", null);

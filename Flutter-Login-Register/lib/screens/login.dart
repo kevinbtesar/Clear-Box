@@ -22,6 +22,7 @@ class LoginState extends State<Login> {
 
   final _key = new GlobalKey<FormState>();
   final _globalKey = new GlobalKey<ScaffoldState>();
+  final emailController = TextEditingController();
 
   @override
   void initState() {
@@ -36,6 +37,13 @@ class LoginState extends State<Login> {
       key: _globalKey,
       body: _login(),
     );
+  }
+
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is disposed.
+    emailController.dispose();
+    super.dispose();
   }
 
   Widget _login() {
@@ -78,6 +86,7 @@ class LoginState extends State<Login> {
                         Card(
                           elevation: 6.0,
                           child: TextFormField(
+                            controller: emailController,
                             validator: (e) {
                               if (e.isEmpty) {
                                 return Constants.EMAIL_ERROR_EMPTY;
@@ -139,7 +148,9 @@ class LoginState extends State<Login> {
                         ),
 
                         FlatButton(
-                          onPressed: null,
+                          onPressed: () {
+                            resetPassword();
+                          },
                           child: Text(
                             "Forgot Password?",
                             style: TextStyle(
@@ -286,5 +297,33 @@ class LoginState extends State<Login> {
     setState(() {
       _loggedIn = _preferences.getBool("logged_in") ?? false;
     });
+  }
+
+  resetPassword() async {
+    int apiStatus = 500;
+    String apiMessage = '';
+
+    if (emailController.text != null) {
+      _email = emailController.text;
+      final response = await http.post(Constants.EMAIL_RESET_API_URL, body: {
+        //"action_flag": 1.toString(),
+        "email": _email,
+      });
+
+      final data = jsonDecode(response.body);
+      apiStatus = data['data']['status'] ?? 500;
+      apiMessage = data['message'] ??
+          "If email address was found, an email containing your reset link will be sent to it.";
+      //String firstName = data['first_name'];
+
+    } else {
+      apiMessage = 'Email cannot be empty';
+    }
+
+    if (apiStatus != 200) {
+      apiMessage = "Network connection not found";
+    }
+    print(apiMessage);
+    loginToast(apiMessage);
   }
 }
