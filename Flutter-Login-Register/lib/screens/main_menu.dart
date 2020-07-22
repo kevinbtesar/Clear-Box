@@ -3,20 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-//import 'login.dart';
+import 'login.dart';
 
 class MainMenu extends StatefulWidget {
   //final VoidCallback signOut;
-  final SharedPreferences _preferences = null;
-  MainMenu(/*this.signOut*/ _preferences);
+  final SharedPreferences _preferences;
+  MainMenu(/*this.signOut*/ this._preferences);
 
   @override
   MainMenuState createState() => MainMenuState();
 }
 
 class MainMenuState extends State<MainMenu> {
-  //SharedPreferences _preferences;
-
   @override
   void initState() {
     super.initState();
@@ -24,7 +22,6 @@ class MainMenuState extends State<MainMenu> {
   }
 
   //signOut(BuildContext context) async {
-  //signOut(BuildContext context) {
   signOut(SharedPreferences preferences) {
     //SharedPreferences preferences = await SharedPreferences.getInstance();
 
@@ -38,12 +35,11 @@ class MainMenuState extends State<MainMenu> {
       preferences.setInt("user_status", 0);
 
       //widget.signOut();
-      /*Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => Login()),
-      );*/
+      );
     });
-    Navigator.pop(context);
   }
 
   int currentIndex = 0;
@@ -52,24 +48,26 @@ class MainMenuState extends State<MainMenu> {
   String email = "", first_name = "", last_name = "", id = "";
   TabController tabController;
 
-  getPref() async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    //setState(() {
-    if (preferences.containsKey("logged_in")) {
-      id = preferences.getString("id") ?? "";
-      email = preferences.getString("email") ?? "";
-      first_name = preferences.getString("first_name") ?? "";
-      last_name = preferences.getString("last_name") ?? "";
-    }
-    //});
-    print("id" + id);
-    print("email" + email);
-    print("first_name" + first_name);
-    print("last_name" + last_name);
+  getPref() {
+    SharedPreferences preferences = widget._preferences;
+    setState(() {
+      if (preferences.containsKey("logged_in")) {
+        id = preferences.getString("id") ?? "";
+        email = preferences.getString("email") ?? "";
+        first_name = preferences.getString("first_name") ?? "";
+        last_name = preferences.getString("last_name") ?? "";
+
+        print("id" + id);
+        print("email" + email);
+        print("first_name" + first_name);
+        print("last_name" + last_name);
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    //
     return Scaffold(
       appBar: AppBar(
         actions: <Widget>[
@@ -81,6 +79,8 @@ class MainMenuState extends State<MainMenu> {
             icon: Icon(Icons.lock_open),
           )
         ],
+        title: Text(""),
+        automaticallyImplyLeading: false,
       ),
       body: Center(
         child: Text(

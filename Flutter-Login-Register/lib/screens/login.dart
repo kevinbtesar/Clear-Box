@@ -203,12 +203,8 @@ class LoginState extends State<Login> {
         ),
       );
     } else {
-      //return new MainMenu(/*signOut*/ _preferences);
-      //rreturn ProfilePage(signOut);
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => MainMenu(_preferences)),
-      );
+      return new MainMenu(/*signOut*/ _preferences);
+      //return ProfilePage(signOut);
     }
   }
 
@@ -275,8 +271,6 @@ class LoginState extends State<Login> {
   }
 
   savePref(String email, String firstName, String lastName, String id) async {
-    //SharedPreferences preferences = await SharedPreferences.getInstance();
-
     setState(() {
       _preferences.setBool("logged_in", _loggedIn);
       _preferences.setString("first_name", firstName);
@@ -288,30 +282,9 @@ class LoginState extends State<Login> {
 
   getPref() async {
     //SharedPreferences preferences = await SharedPreferences.getInstance();
-
     _preferences = await SharedPreferences.getInstance();
     setState(() {
       _loggedIn = _preferences.getBool("logged_in") ?? false;
     });
   }
-
-  //signOut() async {
-  /* 
-  There's no reason for login.dart to contain the signOut method.
-  However, it was an example showing how to pass methods to other classes.
-
-  signOut() {
-    //SharedPreferences preferences = await SharedPreferences.getInstance();
-    setState(() {
-      _preferences.setBool("logged_in", null);
-      _preferences.setString("first_name", null);
-      _preferences.setString("last_name", null);
-      _preferences.setString("email", null);
-      _preferences.setString("id", null);
-
-      _loggedIn = false;
-    });
-
-    loginToast(Constants.LOGOUT_SUCCESS);
-  }*/
 }
