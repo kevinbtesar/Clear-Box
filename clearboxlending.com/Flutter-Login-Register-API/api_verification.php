@@ -135,7 +135,7 @@ try {
 				//$fcm_token = $_POST['fcm_token'];
 
 				//creating a query
-				$query = "SELECT * FROM wp_users WHERE user_email = :userEmail
+				$query = "SELECT * FROM crxji_users WHERE user_email = :userEmail
 			              AND user_pass = :userPass AND (user_status = 1 OR user_status = 2)";
 				$result = $pdo->prepare($query);
 				$result->execute(['userPass' => $userPass, 'userEmail' => $userEmail]);
@@ -183,7 +183,7 @@ try {
 				$userRegistered = current_date_time();
 				$userStatus = 2; // Admins = 1, Users = 2
 
-				$query = "SELECT user_email, user_url FROM wp_users 
+				$query = "SELECT user_email, user_url FROM crxji_users 
 				          WHERE user_email = :userEmail OR user_url = :phone ";
 				$params = ['userEmail' => $userEmail, 'phone' => $phone];
 				$result = $pdo->prepare($query);
@@ -207,7 +207,7 @@ try {
 						}
 					}
 				} else {
-					$query = "INSERT INTO wp_users (user_login, user_pass, 
+					$query = "INSERT INTO crxji_users (user_login, user_pass, 
 													user_nicename, user_email, user_url, 
 													user_registered, user_activation_key, 
 													user_status, display_name) 

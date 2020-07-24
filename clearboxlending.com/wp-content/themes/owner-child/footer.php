@@ -28,7 +28,9 @@
 		<div class="site-info">
 			<div class="mt-container">
 				<div class="owner-copyright-wrapper">
-					<?php// $owner_copyright_text = get_theme_mod( 'owner_copyright_text', __( 'Owner', 'owner' ) ); ?>
+					<?php //$owner_copyright_text = get_theme_mod( 'owner_copyright_text', __( 'Owner', 'owner' ) );
+					$owner_copyright_text = "";
+					?>
 					<span class="owner-copyright"><?php //echo wp_kses_post( $owner_copyright_text ); ?>Clear Box Lending LLC. &copy; <?php echo date('Y'); ?></span>
 					<!--<span class="sep"> | </span>-->
 					<?php //printf( esc_html__( '%1$s by %2$s.', 'owner' ), 'Owner Theme', '<a href="'. esc_url( 'https://mysterythemes.com/' ).'" rel="designer">Mystery Themes</a>' ); ?>

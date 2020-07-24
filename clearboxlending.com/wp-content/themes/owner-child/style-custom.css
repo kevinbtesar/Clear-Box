@@ -20,6 +20,16 @@ Normalizing styles have been helped along thanks to the fine work of
 Nicolas Gallagher and Jonathan Neal http://necolas.github.com/normalize.css/
 */
 
+
+body, button, input, select, textarea {
+  color: #838383 !important;
+  font-family: 'Montserrat', 'sans-serif' !important;
+  font-size: 13px !important;
+  line-height: 1.8 !important;
+  font-weight: 400 !important;
+}
+
+
 /* Color of text in submit buttons */
 .black {
     color: black !important;

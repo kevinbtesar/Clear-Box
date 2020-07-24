@@ -10,8 +10,9 @@ class MyHttpOverrides extends HttpOverrides {
     return super.createHttpClient(context)
       ..badCertificateCallback =
           ((X509Certificate cert, String host, int port) {
-        final isValidHost =
-            host == "clearboxlending.com" || host == "logogenie.net";
+        final isValidHost = host == "clearboxlending.com" ||
+            host == "logogenie.net" ||
+            host == "google.com";
         return isValidHost;
       });
   }

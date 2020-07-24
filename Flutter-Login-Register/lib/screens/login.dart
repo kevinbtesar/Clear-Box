@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../helpers/constants.dart' as Constants;
 import 'register.dart';
 import 'main_menu.dart';
+import 'webview_forgot_pw.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -149,7 +150,12 @@ class LoginState extends State<Login> {
 
                         FlatButton(
                           onPressed: () {
-                            resetPassword();
+                            //resetPassword();
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => WebViewForgotPW()),
+                            );
                           },
                           child: Text(
                             "Forgot Password?",

@@ -20,6 +20,8 @@ const EMAIL_SET_API_URL =
     "https://clearboxlending.com/wp-json/bdpwr/v1/set-password";
 const EMAIL_VALIDATE_CODE_API_URL =
     "https://clearboxlending.com/wp-json/bdpwr/v1/validate-code";
+const LOST_PASSWORD =
+    "https://clearboxlending.com/login.php?action=lostpassword";
 
 // Shared Preference keys
 const kDeviceName = "device_name";

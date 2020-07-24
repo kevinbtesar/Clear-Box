@@ -30,4 +30,50 @@ function my_scripts_and_styles(){
 }
 add_action( 'wp_enqueue_scripts', 'my_scripts_and_styles', 1);
 
+
+add_action('wp_enqueue_scripts', 'shopkeeper_enqueue_styles', 100);
+function shopkeeper_enqueue_styles() 
+{
+    // enqueue parent styles
+    wp_enqueue_style('main', get_template_directory_uri() .'/style.css');
+    // enqueue RTL styles
+    //if (is_rtl()) {
+        //wp_enqueue_style( 'shopkeeper-child-rtl-styles', get_template_directory_uri() . '/rtl.css', array( 'shopkeeper-styles' ), wp_get_theme()->get('Version') );
+    //}
+    // Do manually to control version. Forces new version to show rather than outdated ver
+    //wp_enqueue_style( 'blankslate-style', get_stylesheet_uri() );
+    //wp_enqueue_script('jquery');
+    //wp_enqueue_script('jquery-ui-core');
+    //wp_register_script('ScrollMagic', get_stylesheet_directory_uri() . '/js/scrollmagic.min.js', array('jquery'), '1.1', false);
+    //wp_enqueue_script('ScrollMagic');
+    wp_enqueue_style( 'bootstrap', 'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css' );
+}
+/* asynchronously load scripts *************************/
+function add_async_attribute($tag, $handle)
+{
+    // add script handles to the array below
+    $scripts_to_async = array('jquery-migrate', 'jquery', 'jquery-ui-core', 'bootstrap');
+    foreach ($scripts_to_async as $async_script) {
+        if ($async_script === $handle) {
+            return str_replace(' src', ' async src', $tag);
+        }
+    }
+    return $tag;
+}
+add_filter('script_loader_tag', 'add_async_attribute', 10, 2);
+/* defer scripts *************************/
+function add_defer_attribute($tag, $handle)
+{
+    // add script handles to the array below
+    $scripts_to_defer = array('smartmenus', 'admin-bar');
+    foreach ($scripts_to_defer as $defer_script) {
+        if ($defer_script === $handle) {
+            return str_replace(' src', ' defer="defer" src', $tag);
+        }
+    }
+    return $tag;
+}
+add_filter('script_loader_tag', 'add_defer_attribute', 10, 2);
+
+
 ?>
