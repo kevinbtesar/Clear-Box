@@ -46,7 +46,7 @@ function shopkeeper_enqueue_styles()
     //wp_enqueue_script('jquery-ui-core');
     //wp_register_script('ScrollMagic', get_stylesheet_directory_uri() . '/js/scrollmagic.min.js', array('jquery'), '1.1', false);
     //wp_enqueue_script('ScrollMagic');
-    wp_enqueue_style( 'bootstrap', 'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css' );
+    //wp_enqueue_style( 'bootstrap', 'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css' );
 }
 /* asynchronously load scripts *************************/
 function add_async_attribute($tag, $handle)

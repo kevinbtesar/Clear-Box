@@ -12,7 +12,8 @@ class MyHttpOverrides extends HttpOverrides {
           ((X509Certificate cert, String host, int port) {
         final isValidHost = host == "clearboxlending.com" ||
             host == "logogenie.net" ||
-            host == "google.com";
+            host == "google.com" ||
+            host == "stackpath.bootstrapcdn.com";
         return isValidHost;
       });
   }

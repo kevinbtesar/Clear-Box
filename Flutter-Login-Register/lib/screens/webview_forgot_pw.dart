@@ -5,10 +5,11 @@
 // ignore_for_file: public_member_api_docs
 
 import 'dart:async';
-import 'dart:convert';
+//import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import '../helpers/constants.dart' as Constants;
+import '../widgets/loading_spinner.dart' as LoadingSpinner;
 
 /*const String kNavigationExamplePage = '''
 <!DOCTYPE html><html>
@@ -38,12 +39,12 @@ class _WebViewForgotPWState extends State<WebViewForgotPW> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Flutter WebView example'),
+        title: const Text('Forgot Password'),
         // This drop down menu demonstrates that Flutter widgets can be shown over the web view.
-        actions: <Widget>[
+        /*actions: <Widget>[
           NavigationControls(_controller.future),
           //SampleMenu(_controller.future),
-        ],
+        ],*/
       ),
       // We're using a Builder here so we have a context that is below the Scaffold
       // to allow calling Scaffold.of(context) so we can show a snackbar.
@@ -67,11 +68,11 @@ class _WebViewForgotPWState extends State<WebViewForgotPW> {
 
             //Check your email for the confirmation link.
             //<p class="message">	Check your email for the confirmation link.<br></p>
-            if (!request.url.startsWith('https://clearboxlending.com/login.php?action=lostpassword') &&
+            if (!request.url.startsWith('https://clearboxlending.com/wp-login.php?action=lostpassword') &&
                 !request.url.startsWith(
                     'https://clearboxlending.com/forgot-password-confirmation') &&
                 !request.url.startsWith(
-                    'https://clearboxlending.com/login.php?checkemail=confirm')) {
+                    'https://clearboxlending.com/wp-login.php?checkemail=confirm')) {
               print('blocking navigation to $request}');
               return NavigationDecision.prevent;
             }
@@ -80,6 +81,7 @@ class _WebViewForgotPWState extends State<WebViewForgotPW> {
           },
           onPageStarted: (String url) {
             print('Page started loading: $url');
+            new LoadingSpinner.LoadingSpinner();
           },
           onPageFinished: (String url) {
             print('Page finished loading: $url');
