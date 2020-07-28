@@ -254,6 +254,10 @@ class LoginState extends State<Login> {
           //"fcm_token": "test_fcm_token"
         });
 
+    // PHP ERRORS?
+    // Step 1. Comment out ob_get_clean() in api_verfication.php to see body of errors.
+    // Step 2. Add break to `jsonDecode(response.body);`
+    // Step 3. in Debug List of variables, find outer body variable. Right click, and copy value.
     final data =
         jsonDecode(response.body); // <- break here to see body of PHP errors
     String apiStatus = data['api_status'];

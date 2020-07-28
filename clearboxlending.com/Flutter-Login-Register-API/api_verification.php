@@ -1,7 +1,5 @@
 <?php
-ob_start(); // Step 1. Comment to see body of errors. 
-// Step 2. Break at login.dart, line ~257
-// final data = jsonDecode(response.body); <- break here
+ob_start();
 
 error_reporting(E_ALL);
 ini_set("display_errors", 1);
@@ -18,8 +16,8 @@ require_once('connection.php');
 
 
 // Initialize values needed for try/catch output.
-(string) $query;
-(object) $params;
+(string) $query = null;
+(object) $params = null;
 
 //flag to check and to execute specific switch case based on flag value sent
 (int) $actionFlag = $_POST['action_flag'];
@@ -323,7 +321,13 @@ try {
 
 $pdo=null; // Close SQL connection
 
-ob_get_clean();
+// PHP ERRORS? 
+// Step 1. Comment out ob_get_clean() to see body of errors. 
+// Step 2. Break at login.dart, line ~257
+// Step 2a. find: ``` final data = jsonDecode(response.body); ``` <- break here
+// Step 3. in Debug List of variables, find outer body variable. Right click, and copy value.
+
+ob_get_clean(); // <- Comment out for debugging (Step 2)
 
 header("Content-Type: application/json");
 echo json_encode($json); // Removal will cause return to be empty
