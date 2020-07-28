@@ -1,5 +1,5 @@
 <?php
-require_once('api_security.php');
+require_once('inc_security.php'); // Must be included with every php file in API directory
 
 
 define("LOGIN_SUCCESS", "Successfully logged in");

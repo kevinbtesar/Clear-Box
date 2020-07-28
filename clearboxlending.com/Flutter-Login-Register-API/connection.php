@@ -1,4 +1,5 @@
 <?php
+require_once('inc_security.php'); // Must be included with every php file in API directory
 
 $servername = "localhost";
 $dbname = "root_clearbo";

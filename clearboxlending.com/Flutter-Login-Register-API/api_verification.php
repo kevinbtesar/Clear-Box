@@ -1,5 +1,12 @@
 <?php
-require_once('api_security.php');
+ob_start(); // Step 1. Comment to see body of errors. 
+// Step 2. Break at login.dart, line ~257
+// final data = jsonDecode(response.body); <- break here
+
+error_reporting(E_ALL);
+ini_set("display_errors", 1);
+
+require_once('inc_security.php'); // Must be included with every php file in API directory
 require_once('constants.php');
 require_once('functions.php');
 require_once('connection.php');
@@ -73,7 +80,6 @@ if ($_POST['password'] != null && !empty($_POST['password']))
 		$json['api_message'] = REGISTRATION_FAILED_PASSWORD_LENGTH;
 		$validationErrorFlag = true;
 	}
-	$userPass = md5_hash($_POST['password']); // trim and hash password string
 
 } else 
 {
@@ -133,46 +139,55 @@ try {
 			case 1:
 
 				//$fcm_token = $_POST['fcm_token'];
+				$check = check_login($userEmail, $userPass);
+				if($check) 
+				{
+					//creating a query
+					$query = "SELECT * FROM crxji_users WHERE user_email = :userEmail
+							AND (user_status = 1 OR user_status = 2)";
+					$result = $pdo->prepare($query);
+					$params = ['userEmail' => $userEmail];
+					$result->execute($params);
+					//output_error_log("case1", 'debugDumpParams: ' . $result->debugDumpParams() . ' sql: ' . sql_debug($query, $params));
+					$rows = $result->fetchAll();
 
-				//creating a query
-				$query = "SELECT * FROM crxji_users WHERE user_email = :userEmail
-			              AND user_pass = :userPass AND (user_status = 1 OR user_status = 2)";
-				$result = $pdo->prepare($query);
-				$result->execute(['userPass' => $userPass, 'userEmail' => $userEmail]);
-				$rows = $result->fetchAll();
+					if (count($rows) == 1) {
 
-				if (count($rows) == 1) {
+						// Login success
 
-					// Login success
+						foreach ($rows as $row) {
+							//Update FCM Token
+							/*$query2 = "UPDATE `user` SET `fcm_token`='$fcm_token' 
+								WHERE `id`='".$row['id']."' ";
+							$result2 = mysqli_query($connect, $query2);*/
 
-					foreach ($rows as $row) {
-						//Update FCM Token
-						/*$query2 = "UPDATE `user` SET `fcm_token`='$fcm_token' 
-							   WHERE `id`='".$row['id']."' ";
-                		$result2 = mysqli_query($connect, $query2);*/
+							$json['api_status'] = 'success';
+							$json['api_message'] = LOGIN_SUCCESS;
 
-						$json['api_status'] = 'success';
-						$json['api_message'] = LOGIN_SUCCESS;
+							$json['id'] = $row['ID'];
+							$json['email'] = $row['user_email'];
+							$json['first_name'] = $row['user_login'];
+							$json['last_name'] = $row['user_nicename'];
+							$json['phone'] = $row['user_url'];
+							$json['user_status'] = $row['user_status'];
+						}
+					} else if (count($rows) > 1) {
+						// Login failed - duplicate emails found
 
-						$json['id'] = $row['ID'];
-						$json['email'] = $row['user_email'];
-						$json['first_name'] = $row['user_login'];
-						$json['last_name'] = $row['user_nicename'];
-						$json['phone'] = $row['user_url'];
-						$json['user_status'] = $row['user_status'];
+						$json['api_status'] = 'fail';
+						$json['api_message'] = LOGIN_FAILED_DUPLICATE_EMAILS;
+					} else {
+						// Login failed- matching emails not found
+
+						$json['api_status'] = 'fail';
+						$json['api_message'] = LOGIN_FAILED_NO_MATCHING;
 					}
-				} else if (count($rows) > 1) {
-					// Login failed - duplicate emails found
-
-					$json['api_status'] = 'fail';
-					$json['api_message'] = LOGIN_FAILED_DUPLICATE_EMAILS;
 				} else {
 					// Login failed- matching email and password not found
 
 					$json['api_status'] = 'fail';
 					$json['api_message'] = LOGIN_FAILED_NO_MATCHING;
 				}
-
 
 				break; //Ends case 1
 
@@ -306,7 +321,13 @@ try {
 	
 }
 
+$pdo=null; // Close SQL connection
 
+ob_get_clean();
+
+header("Content-Type: application/json");
 echo json_encode($json); // Removal will cause return to be empty
 
-$pdo=null; // Close SQL connection
+ob_end_flush();
+exit;
+?>

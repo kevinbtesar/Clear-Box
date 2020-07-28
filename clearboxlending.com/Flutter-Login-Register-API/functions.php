@@ -1,12 +1,26 @@
 <?php
-require_once('api_security.php');
+require_once('inc_security.php'); // Must be included with every php file in API directory
 
 
-if (!function_exists('md5_hash'))
+if (!function_exists('check_login'))
 {
-    function md5_hash(string $string)
+    function check_login(string $email, string $string)
     {
-        return md5($string);
+
+        require_once('./../wp-blog-header.php');
+        global $wpdb;
+        $user = get_user_by( 'email', $email );
+        output_error_log("check_login", "email: " . $email . " user: " . print_r($user));
+        if ( $user && wp_check_password( $string, $user->data->user_pass, $user->ID ) ) {
+     
+            //output_error_log("check_login", 'That\'s it');
+            return true;
+        } else {
+ 
+            ///output_error_log("check_login", 'Nope');
+            return false;
+        }
+        
     }
 }
 

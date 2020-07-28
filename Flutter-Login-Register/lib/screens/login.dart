@@ -254,7 +254,8 @@ class LoginState extends State<Login> {
           //"fcm_token": "test_fcm_token"
         });
 
-    final data = jsonDecode(response.body);
+    final data =
+        jsonDecode(response.body); // <- break here to see body of PHP errors
     String apiStatus = data['api_status'];
     String apiMessage = data['api_message'];
     _email = data['email'];
