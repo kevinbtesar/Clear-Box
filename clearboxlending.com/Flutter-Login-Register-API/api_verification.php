@@ -140,49 +140,67 @@ try {
 				$check = check_login($userEmail, $userPass);
 				if($check) 
 				{
-					//creating a query
-					$query = "SELECT * FROM crxji_users WHERE user_email = :userEmail
-							AND (user_status = 1 OR user_status = 2)";
-					$result = $pdo->prepare($query);
-					$params = ['userEmail' => $userEmail];
-					$result->execute($params);
-					//output_error_log("case1", 'debugDumpParams: ' . $result->debugDumpParams() . ' sql: ' . sql_debug($query, $params));
-					$rows = $result->fetchAll();
+					if($check == 'not confirmed') 
+					{
+						// User email has not been confirmed
 
-					if (count($rows) == 1) {
+						$json['api_status'] = 'fail';
+						$json['api_message'] = LOGIN_FAILED_NOT_CONFIRMED;
 
+					} else if($check == 'invalid status') 
+					{
+						// Invalid status. Return general failed message.
+
+						$json['api_status'] = 'fail';
+						$json['api_message'] = LOGIN_FAILED;
+
+					} else {
+						
 						// Login success
 
-						foreach ($rows as $row) {
-							//Update FCM Token
-							/*$query2 = "UPDATE `user` SET `fcm_token`='$fcm_token' 
-								WHERE `id`='".$row['id']."' ";
-							$result2 = mysqli_query($connect, $query2);*/
+						//output_error_log("case1", 'debugDumpParams: ' . $result->debugDumpParams() . ' sql: ' . sql_debug($query, $params));
+						//output_error_log("case1", '$check was true');
 
-							$json['api_status'] = 'success';
-							$json['api_message'] = LOGIN_SUCCESS;
+						$json['api_status'] = 'success';
+						$json['api_message'] = LOGIN_SUCCESS;
 
-							$json['id'] = $row['ID'];
-							$json['email'] = $row['user_email'];
-							$json['first_name'] = $row['user_login'];
-							$json['last_name'] = $row['user_nicename'];
-							$json['phone'] = $row['user_url'];
-							$json['user_status'] = $row['user_status'];
-						}
-					} else if (count($rows) > 1) {
-						// Login failed - duplicate emails found
+						$json['id'] = $check->ID;
+						$json['email'] = $check->data->user_email;
+						$json['first_name'] = $check->first_name[0];
+						$json['last_name'] = $check->last_name[0];
+						$json['phone'] = $check->data->user_url;
+						$json['user_status'] = $check->data->user_status;
 
-						$json['api_status'] = 'fail';
-						$json['api_message'] = LOGIN_FAILED_DUPLICATE_EMAILS;
-					} else {
-						// Login failed- matching emails not found
+						// Following left in for referencing 
 
-						$json['api_status'] = 'fail';
-						$json['api_message'] = LOGIN_FAILED_NO_MATCHING;
+						//creating a query
+						/*$query = "SELECT * FROM crxji_users WHERE user_email = :userEmail
+								AND (user_status = 1 OR user_status = 2)";
+						$result = $pdo->prepare($query);
+						$params = ['userEmail' => $userEmail];
+						$result->execute($params);
+					
+						$rows = $result->fetchAll();
+
+						if (count($rows) == 1) {
+
+							foreach ($rows as $row) {
+								//Update FCM Token
+								$query2 = "UPDATE `user` SET `fcm_token`='$fcm_token' 
+									WHERE `id`='".$row['id']."' ";
+								$result2 = mysqli_query($connect, $query2);
+
+								$json['api_status'] = 'success';
+								$json['api_message'] = LOGIN_SUCCESS;
+
+								$json['id'] = $row['ID'];
+
+							}
+						} */
 					}
 				} else {
 					// Login failed- matching email and password not found
-
+					output_error_log("case 1", '$check was false');
 					$json['api_status'] = 'fail';
 					$json['api_message'] = LOGIN_FAILED_NO_MATCHING;
 				}
@@ -193,11 +211,9 @@ try {
 				//////// Register /////////////////////////////////////////////////////////////////////////////////////////////////////
 			case 2:
 
-				$userRegistered = current_date_time();
-				$userStatus = 2; // Admins = 1, Users = 2
-
 				$query = "SELECT user_email, user_url FROM crxji_users 
-				          WHERE user_email = :userEmail OR user_url = :phone ";
+						  WHERE user_email = :userEmail OR user_url = :phone ";
+				//$pdo->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING ); // Debugging setting. Must be done before prepare()
 				$params = ['userEmail' => $userEmail, 'phone' => $phone];
 				$result = $pdo->prepare($query);
 				$result->execute($params);
@@ -209,7 +225,9 @@ try {
 				 * While the PDO function rowCount() would work as well, 
 				 * I read that it can return 0 rows, though it's not accurate.
 				 */
-				if (count($rows) > 0) {
+				if (count($rows) > 0) 
+				{
+					// Duplicate email or phone found
 
 					$json['api_status'] = 'fail';
 					foreach ($rows as $row) {
@@ -220,7 +238,48 @@ try {
 						}
 					}
 				} else {
-					$query = "INSERT INTO crxji_users (user_login, user_pass, 
+
+					require_once('./../wp-blog-header.php');
+					//global $wpdb; // dont think this is need. scheduled for deletion
+					
+					$data = array(
+						'user_login'           => $userEmail, // the user's login username.
+						'user_pass'            => $userPass, // not necessary to hash password ( The plain-text user password ).
+						'show_admin_bar_front' => false, // display the Admin Bar for the user 'true' or 'false'
+						'user_url'   		   => $phone,
+						'first_name'   		   => $firstName,
+						'last_name'   		   => $lastName,
+						'user_registered'      => current_date_time(),
+						'user_status' 		   => 0, // Admins = 1, Normal Users = 0	
+						'user_email' 		   => $userEmail,
+						'display_name' 		   => $firstName,
+						'use_ssl' 		       => true,
+						'role' 		           => 'subscriber'
+					);
+					  
+					$user_id = wp_insert_user( $data );
+					  
+					if ( ! is_wp_error( $user_id ) ) 
+					{
+						// User created successfully!
+
+						output_error_log("case 2", "User created successfully! User ID : ". $user_id); 
+						
+						$json['api_status'] = 'success';
+						$json['api_message'] = REGISTRATION_SUCCESSFUL;
+						 
+					} else 
+					{
+						// User creation failed
+
+						output_error_log("case 2", 'User creation failed');
+						$json['api_status'] = 'fail';
+						$json['api_message'] = REGISTRATION_FAILED;
+					}
+
+					// Following left in for reference
+
+					/*$query = "INSERT INTO crxji_users (user_login, user_pass, 
 													user_nicename, user_email, user_url, 
 													user_registered, user_activation_key, 
 													user_status, display_name) 
@@ -250,7 +309,7 @@ try {
 					} else {
 						$json['api_status'] = 'fail';
 						$json['api_message'] = REGISTRATION_FAILED;
-					}
+					}*/
 
 					/**
 					 * Alternatively, we could of check whether the insert was successful with the following if statements:
@@ -306,32 +365,30 @@ try {
 	} // Validation check end
 
 } catch (Exception $e) {
-	//error_log($e);
-	output_error_log('api_verification.php - Switch\'s try/catch block', 'Error: ' . $e);
-	
+
 	/* Debugging info */
 
-	output_error_log("here0", 'debugDumpParams: ' . $pdo->debugDumpParams . ' sql: ' . sql_debug($query, $params));
+	output_error_log('api_verification.php - Switch\'s try/catch block', 'Error: ' . $e);
+	output_error_log("api_verification.php", 'debugDumpParams: ' . $pdo->debugDumpParams . ' sql: ' . sql_debug($query, $params));
 	$databaseErrors = $inserted->errorInfo();
-	$errorInfo = print_r($databaseErrors, true);
-	output_error_log("here1", $errorInfo);
-				
-	
+	$errorInfo = json_encode($databaseErrors);
+	output_error_log("api_verification.php", $errorInfo);
 }
 
 $pdo=null; // Close SQL connection
 
 // PHP ERRORS? 
-// Step 1. Comment out ob_get_clean() to see body of errors. 
-// Step 2. Break at login.dart, line ~257
+// Step 1. Comment out ob_get_clean() to see body of PHP errors. 
+// Step 2. Break at login.dart, line ~257 OR Break at register.dart, line ~54
 // Step 2a. find: ``` final data = jsonDecode(response.body); ``` <- break here
 // Step 3. in Debug List of variables, find outer body variable. Right click, and copy value.
+// Step 4. Paste that value into text editor. You can now see PHP errors!
 
-ob_get_clean(); // <- Comment out for debugging (Step 2)
+ob_get_clean(); // <- Comment out for debugging (Step 1)
 
 header("Content-Type: application/json");
 echo json_encode($json); // Removal will cause return to be empty
 
-ob_end_flush();
-exit;
+ob_end_flush(); // added for good practice
+exit; // exit php
 ?>

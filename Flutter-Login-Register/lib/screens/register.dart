@@ -41,7 +41,6 @@ class _RegisterState extends State<Register> {
             "=" +
             Constants.API_URL_VALUE,
         body: {
-          //.post(Constants.API_BASE_URL + Constants.API_VERIFICATION, body: {
           "action_flag": 2.toString(),
           "first_name": firstName,
           "last_name": lastName,

@@ -5,8 +5,9 @@ require_once('inc_security.php'); // Must be included with every php file in API
 define("LOGIN_SUCCESS", "Successfully logged in");
 define("LOGIN_FAILED", "Failed to log in");
 
-define("LOGIN_FAILED_DUPLICATE_EMAILS", "Duplicate emails found. Please contact support.");
+//define("LOGIN_FAILED_DUPLICATE_EMAILS", "Duplicate emails found. Please contact support."); // No longer used. Could pose security hazard.
 define("LOGIN_FAILED_NO_MATCHING", "Login failed. Matching email and password could not be found.");
+define("LOGIN_FAILED_NOT_CONFIRMED", "Login failed. Email address has not been confirmed. Click HERE to resend activation link.");
 
 define("REGISTRATION_SUCCESSFUL", "Successfully registered");
 

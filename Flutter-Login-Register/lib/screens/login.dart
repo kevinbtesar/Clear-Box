@@ -267,7 +267,7 @@ class LoginState extends State<Login> {
     String lastName = data['last_name'];
     String id = data['id'].toString();
     String phone = data['phone'];
-    int userStatus = data['user_status'];
+    String userStatus = data['user_status'];
 
     if (apiStatus == 'success') {
       setState(() {
