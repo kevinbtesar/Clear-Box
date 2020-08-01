@@ -12,8 +12,11 @@
                 "name": "Dart",
                 "program": "Flutter-Login-Register/lib/main.dart",
                 "request": "launch",
-                "type": "dart"
+                "type": "dart",
             }
         ]
+    },
+    "settings": {
+        "java.configuration.updateBuildConfiguration": "interactive"
     }
 }
