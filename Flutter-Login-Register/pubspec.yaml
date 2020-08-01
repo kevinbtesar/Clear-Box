@@ -30,7 +30,6 @@ dependencies:
   bottom_navy_bar: ^3.0.0
   shared_preferences: ^0.5.2
   cached_network_image: ^1.1.1
-  webview_flutter: ^0.3.22+1
 
 dev_dependencies:
   flutter_test:
@@ -80,3 +79,7 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+  
+  plugin:
+    androidPackage: com.clearboxlending.flutter_login
+    pluginClass: MainActivity

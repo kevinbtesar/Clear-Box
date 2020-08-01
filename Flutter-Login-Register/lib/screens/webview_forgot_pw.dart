@@ -7,9 +7,9 @@
 import 'dart:async';
 //import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_login/widgets/loading_spinner.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import '../helpers/constants.dart' as Constants;
-import '../widgets/loading_spinner.dart' as LoadingSpinner;
 
 /*const String kNavigationExamplePage = '''
 <!DOCTYPE html><html>
@@ -81,7 +81,8 @@ class _WebViewForgotPWState extends State<WebViewForgotPW> {
           },
           onPageStarted: (String url) {
             print('Page started loading: $url');
-            new LoadingSpinner.LoadingSpinner();
+            LoadingSpinner loadingSpinner = new LoadingSpinner();
+            loadingSpinner.createState();
           },
           onPageFinished: (String url) {
             print('Page finished loading: $url');
