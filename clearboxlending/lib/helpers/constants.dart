@@ -14,12 +14,6 @@ const API_URL_VALUE = "clearBoxLendingIsTheBestLendingCompanyEVER2468642";
 const API_VERIFICATION = "api_verification.php";
 
 // Email Reset API related
-const EMAIL_RESET_API_URL =
-    "https://clearboxlending.com/wp-json/bdpwr/v1/reset-password";
-const EMAIL_SET_API_URL =
-    "https://clearboxlending.com/wp-json/bdpwr/v1/set-password";
-const EMAIL_VALIDATE_CODE_API_URL =
-    "https://clearboxlending.com/wp-json/bdpwr/v1/validate-code";
 const LOST_PASSWORD =
     "https://clearboxlending.com/wp-login.php?action=lostpassword";
 

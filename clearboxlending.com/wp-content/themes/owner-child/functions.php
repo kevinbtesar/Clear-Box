@@ -36,16 +36,9 @@ function shopkeeper_enqueue_styles()
 {
     // enqueue parent styles
     wp_enqueue_style('main', get_template_directory_uri() .'/style.css');
-    // enqueue RTL styles
-    //if (is_rtl()) {
-        //wp_enqueue_style( 'shopkeeper-child-rtl-styles', get_template_directory_uri() . '/rtl.css', array( 'shopkeeper-styles' ), wp_get_theme()->get('Version') );
-    //}
     // Do manually to control version. Forces new version to show rather than outdated ver
     //wp_enqueue_style( 'blankslate-style', get_stylesheet_uri() );
     //wp_enqueue_script('jquery');
-    //wp_enqueue_script('jquery-ui-core');
-    //wp_register_script('ScrollMagic', get_stylesheet_directory_uri() . '/js/scrollmagic.min.js', array('jquery'), '1.1', false);
-    //wp_enqueue_script('ScrollMagic');
     //wp_enqueue_style( 'bootstrap', 'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css' );
 }
 /* asynchronously load scripts *************************/
@@ -81,4 +74,23 @@ function set_user_admin_bar_false_by_default($user_id) {
     update_user_meta( $user_id, 'show_admin_bar_front', 'false' );
     update_user_meta( $user_id, 'show_admin_bar_admin', 'false' );
 }
+
+
+// Add custom styling to wp-login. 
+// Removes links to login and home 
+function custom_login_logo() {
+	echo '<style type="text/css">
+            #nav {
+                display: none !important;
+            }
+            #backtoblog {
+                display: none !important;
+            }
+          </style>';
+}
+add_action('login_head', 'custom_login_logo');
+
+
+
+
 ?>
