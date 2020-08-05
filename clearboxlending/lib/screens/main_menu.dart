@@ -1,9 +1,12 @@
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'login.dart';
+import 'package:clearboxlending/screens/login.dart';
+import 'package:clearboxlending/navigation/zoom_scaffold.dart';
+import 'package:clearboxlending/navigation/menu_page.dart';
 
 class MainMenu extends StatefulWidget {
   //final VoidCallback signOut;
@@ -14,11 +17,24 @@ class MainMenu extends StatefulWidget {
   MainMenuState createState() => MainMenuState();
 }
 
-class MainMenuState extends State<MainMenu> {
+class MainMenuState extends State<MainMenu>
+    with SingleTickerProviderStateMixin {
+  MenuController menuController;
+
   @override
   void initState() {
     super.initState();
     getPref();
+
+    menuController = new MenuController(
+      vsync: this,
+    )..addListener(() => setState(() {}));
+  }
+
+  @override
+  void dispose() {
+    menuController.dispose();
+    super.dispose();
   }
 
   //signOut(BuildContext context) async {
@@ -65,8 +81,37 @@ class MainMenuState extends State<MainMenu> {
 
   @override
   Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      builder: (context) => menuController,
+      child: ZoomScaffold(
+        menuScreen: MenuScreen(),
+        contentScreen: Layout(
+            contentBuilder: (cc) => Scaffold(
+                  /*appBar: AppBar(
+                    actions: <Widget>[
+                      IconButton(
+                        onPressed: () {
+                          //signOut(context);
+                          signOut(widget._preferences);
+                        },
+                        icon: Icon(Icons.lock_open),
+                      )
+                    ],
+                    title: Text(""),
+                    automaticallyImplyLeading: false,
+                  ),*/
+                  body: Center(
+                    child: Text(
+                      "Welcome",
+                      style: TextStyle(fontSize: 30.0, color: Colors.blue),
+                    ),
+                  ),
+                )),
+      ),
+    );
+
     //
-    return Scaffold(
+    /*return Scaffold(
       appBar: AppBar(
         actions: <Widget>[
           IconButton(
@@ -115,7 +160,7 @@ class MainMenuState extends State<MainMenu> {
               activeColor: Color(0xFFf7d426)),
         ],
       ),
-    );
+    );*/
   }
 
   //  Action on Bottom Bar Press

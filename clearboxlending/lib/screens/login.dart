@@ -313,6 +313,9 @@ class LoginState extends State<Login> {
     });
   }
 
+  /* Scheduled for deletion. 
+     Decided to not use REST for password recovery.
+
   resetPassword() async {
     int apiStatus = 500;
     String apiMessage = '';
@@ -340,6 +343,7 @@ class LoginState extends State<Login> {
     print(apiMessage);
     loginToast(apiMessage);
   }
+  */
 
   _launchURL() async {
     const url = Constants.LOST_PASSWORD;

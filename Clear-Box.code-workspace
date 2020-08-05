@@ -1,6 +1,10 @@
 {
     "folders": [
         {
+            "name": "clearboxlending.com — (Remote)",
+            "uri": "ftp://clearboxlending.com/"
+        },
+        {
             "path": "."
         }
     ],
