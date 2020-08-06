@@ -1,10 +1,8 @@
-import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:clearboxlending/screens/login.dart';
 import 'package:clearboxlending/navigation/zoom_scaffold.dart';
 import 'package:clearboxlending/navigation/menu_page.dart';
 
@@ -37,32 +35,13 @@ class MainMenuState extends State<MainMenu>
     super.dispose();
   }
 
-  //signOut(BuildContext context) async {
-  signOut(SharedPreferences preferences) {
-    setState(() {
-      preferences.setBool("logged_in", false);
-      preferences.setString("id", null);
-      preferences.setString("email", null);
-      preferences.setString("first_name", null);
-      preferences.setString("last_name", null);
-      preferences.setString("phone", null);
-      preferences.setInt("user_status", 0);
-
-      //widget.signOut();
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => Login()),
-      );
-    });
-  }
-
   int currentIndex = 0;
   String selectedIndex = 'TAB: 0';
 
   String email = "", first_name = "", last_name = "", id = "";
   TabController tabController;
 
-  getPref() {
+  SharedPreferences getPref() {
     SharedPreferences preferences = widget._preferences;
     setState(() {
       if (preferences.containsKey("logged_in")) {
@@ -77,6 +56,7 @@ class MainMenuState extends State<MainMenu>
         print("last_name" + last_name);
       }
     });
+    return preferences;
   }
 
   @override
@@ -107,6 +87,7 @@ class MainMenuState extends State<MainMenu>
                     ),
                   ),
                 )),
+        preferences: this.getPref(),
       ),
     );
 

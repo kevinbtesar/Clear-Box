@@ -1,8 +1,5 @@
-//import 'package:delivery/circular_image.dart';
-//import 'package:delivery/zoom_scaffold.dart';
-
-import 'circular_image.dart';
-import 'zoom_scaffold.dart';
+import 'package:clearboxlending/navigation/circular_image.dart';
+import 'package:clearboxlending/navigation/zoom_scaffold.dart';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -12,11 +9,10 @@ class MenuScreen extends StatelessWidget {
       "https://celebritypets.net/wp-content/uploads/2016/12/Adriana-Lima.jpg";
 
   final List<MenuItem> options = [
-    MenuItem(Icons.search, 'Search'),
-    MenuItem(Icons.shopping_basket, 'Basket'),
-    MenuItem(Icons.favorite, 'Discounts'),
-    MenuItem(Icons.code, 'Prom-codes'),
-    MenuItem(Icons.format_list_bulleted, 'Orders'),
+    MenuItem(Icons.dashboard, 'Dashboard'),
+    MenuItem(Icons.account_box, 'Profile'),
+    MenuItem(Icons.monetization_on, 'Get a Loan'),
+    MenuItem(Icons.library_books, 'Walk-Through'),
   ];
 
   @override
@@ -87,11 +83,11 @@ class MenuScreen extends StatelessWidget {
             ListTile(
               onTap: () {},
               leading: Icon(
-                Icons.headset_mic,
+                Icons.email,
                 color: Colors.white,
                 size: 20,
               ),
-              title: Text('Support',
+              title: Text('Contact Support',
                   style: TextStyle(fontSize: 14, color: Colors.white)),
             ),
           ],

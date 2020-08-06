@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:clearboxlending/screens/login.dart';
 
 class ZoomScaffold extends StatefulWidget {
   final Widget menuScreen;
+  final SharedPreferences preferences;
   final Layout contentScreen;
 
   ZoomScaffold({
     this.menuScreen,
     this.contentScreen,
+    this.preferences,
   });
 
   @override
@@ -22,6 +26,8 @@ class _ZoomScaffoldState extends State<ZoomScaffold>
   Curve slideInCurve = new Interval(0.0, 1.0, curve: Curves.easeOut);
 
   createContentDisplay() {
+    SharedPreferences preferences = widget.preferences;
+
     return zoomAndSlideContent(new Container(
       child: new Scaffold(
         backgroundColor: Colors.transparent,
@@ -39,7 +45,9 @@ class _ZoomScaffoldState extends State<ZoomScaffold>
                 }),
             actions: <Widget>[
               IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  signOut(preferences);
+                },
                 icon: Icon(
                   //Icons.access_time,
                   Icons.lock_open,
@@ -126,6 +134,26 @@ class _ZoomScaffoldState extends State<ZoomScaffold>
     );
   }
 
+  //signOut(BuildContext context) async {
+  signOut(SharedPreferences preferences) {
+    print("HERE signOut");
+    setState(() {
+      preferences.setBool("logged_in", false);
+      preferences.setString("id", null);
+      preferences.setString("email", null);
+      preferences.setString("first_name", null);
+      preferences.setString("last_name", null);
+      preferences.setString("phone", null);
+      preferences.setInt("user_status", 0);
+
+      //widget.signOut();
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => Login()),
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -208,7 +236,8 @@ class MenuController extends ChangeNotifier {
 
   @override
   dispose() {
-    _animationController.dispose();
+    // TODO Add back if needed
+    //_animationController.dispose();
     super.dispose();
   }
 

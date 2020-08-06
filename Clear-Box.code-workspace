@@ -1,10 +1,6 @@
 {
     "folders": [
         {
-            "name": "clearboxlending.com — (Remote)",
-            "uri": "ftp://clearboxlending.com/"
-        },
-        {
             "path": "."
         }
     ],
@@ -14,7 +10,7 @@
 
             {
                 "name": "Dart",
-                "program": "Flutter-Login-Register/lib/main.dart",
+                "program": "clearboxlending/lib/main.dart",
                 "request": "launch",
                 "type": "dart",
             }
