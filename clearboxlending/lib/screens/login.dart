@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'package:clearboxlending/helpers/constants.dart' as Constants;
 import 'package:clearboxlending/screens/register.dart';
 import 'package:clearboxlending/screens/dashboard.dart';
-//import 'webview_forgot_pw.dart';
-import 'package:url_launcher/url_launcher.dart';
+
 
 class Login extends StatefulWidget {
   @override
@@ -151,13 +151,6 @@ class LoginState extends State<Login> {
 
                         FlatButton(
                           onPressed: () {
-                            //resetPassword();
-                            /*Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder:
-                                      (context) => /*WebViewForgotPW()*/ _launchURL()),
-                            );*/
                             _launchURL();
                           },
                           child: Text(
