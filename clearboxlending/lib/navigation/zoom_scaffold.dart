@@ -26,58 +26,66 @@ class _ZoomScaffoldState extends State<ZoomScaffold>
   Curve slideInCurve = new Interval(0.0, 1.0, curve: Curves.easeOut);
 
   createContentDisplay() {
-    SharedPreferences preferences = widget.preferences;
+    //SharedPreferences preferences = widget.preferences;
 
     return zoomAndSlideContent(new Container(
-      child: new Scaffold(
-        backgroundColor: Colors.transparent,
-        appBar: new AppBar(
-            //backgroundColor: Colors.grey[200],
-            elevation: 0.0,
-            leading: new IconButton(
-                icon: Icon(
-                  Icons.menu,
-                  //color: Colors.black,
-                  color: Colors.white,
-                ),
-                onPressed: () {
-                  Provider.of<MenuController>(context, listen: true).toggle();
-                }),
-            actions: <Widget>[
-              IconButton(
-                onPressed: () {
-                  signOut(preferences);
-                },
-                icon: Icon(
-                  //Icons.access_time,
-                  Icons.lock_open,
-                  //color: Colors.grey,
-                  color: Colors.white,
-                ),
-              )
-            ]),
-        body: widget.contentScreen.contentBuilder(context),
-        bottomNavigationBar: BottomNavigationBar(
-          type: BottomNavigationBarType.fixed,
-          currentIndex: 0,
-          items: [
-            BottomNavigationBarItem(
-                title: Text(''),
-                icon: Icon(
-                  Icons.home,
-                  color: Colors.grey,
-                )),
-            BottomNavigationBarItem(
-                title: Text(''),
-                icon: Icon(Icons.shopping_basket, color: Colors.grey)),
-            BottomNavigationBarItem(
-                title: Text(''),
-                icon: Icon(Icons.shopping_cart, color: Colors.grey)),
-            BottomNavigationBarItem(
-                title: Text(''), icon: Icon(Icons.person, color: Colors.grey)),
-          ],
+      // Custom - GestureDetector added so pressing anywhere on the non-nav screen will close the menu
+      child: GestureDetector(
+        onTap: () =>
+            Provider.of<MenuController>(context, listen: true).toggle(false),
+        child: new Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: new AppBar(
+              //backgroundColor: Colors.grey[200],
+              elevation: 0.0,
+              leading: new IconButton(
+                  icon: Icon(
+                    Icons.menu,
+                    //color: Colors.black,
+                    color: Colors.white,
+                  ),
+                  onPressed: () {
+                    Provider.of<MenuController>(context, listen: true)
+                        .toggle(true);
+                  }),
+              actions: <Widget>[
+                IconButton(
+                  onPressed: () {
+                    signOut(widget.preferences);
+                  },
+                  icon: Icon(
+                    //Icons.access_time,
+                    Icons.lock_open,
+                    //color: Colors.grey,
+                    color: Colors.white,
+                  ),
+                )
+              ]),
+          body: widget.contentScreen.contentBuilder(context),
+          bottomNavigationBar: BottomNavigationBar(
+            type: BottomNavigationBarType.fixed,
+            currentIndex: 0,
+            items: [
+              BottomNavigationBarItem(
+                  title: Text(''),
+                  icon: Icon(
+                    Icons.home,
+                    color: Colors.grey,
+                  )),
+              BottomNavigationBarItem(
+                  title: Text(''),
+                  icon: Icon(Icons.shopping_basket, color: Colors.grey)),
+              BottomNavigationBarItem(
+                  title: Text(''),
+                  icon: Icon(Icons.shopping_cart, color: Colors.grey)),
+              BottomNavigationBarItem(
+                  title: Text(''),
+                  icon: Icon(Icons.person, color: Colors.grey)),
+            ],
+          ),
         ),
       ),
+      //child:
     ));
   }
 
@@ -234,12 +242,16 @@ class MenuController extends ChangeNotifier {
       });
   }
 
-  @override
+  /**
+   * Commented out due to causing an error. 
+   * This method included is how zoom_scaffold.dart come out of the box.
+   * Started when zoom_scaffold.dart was added to dashboard.dart
+   */
+  /*@override
   dispose() {
-    // TODO Add back if needed
     //_animationController.dispose();
     super.dispose();
-  }
+  }*/
 
   get percentOpen {
     return _animationController.value;
@@ -253,10 +265,10 @@ class MenuController extends ChangeNotifier {
     _animationController.reverse();
   }
 
-  toggle() {
+  toggle(bool menuButtonPressed) {
     if (state == MenuState.open) {
       close();
-    } else if (state == MenuState.closed) {
+    } else if (state == MenuState.closed && menuButtonPressed) {
       open();
     }
   }

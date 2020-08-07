@@ -4,18 +4,18 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:clearboxlending/navigation/zoom_scaffold.dart';
-import 'package:clearboxlending/navigation/menu_page.dart';
+import 'package:clearboxlending/navigation/menu_fragment.dart';
 
-class MainMenu extends StatefulWidget {
+class Dashboard extends StatefulWidget {
   //final VoidCallback signOut;
   final SharedPreferences _preferences;
-  MainMenu(/*this.signOut*/ this._preferences);
+  Dashboard(/*this.signOut*/ this._preferences);
 
   @override
   MainMenuState createState() => MainMenuState();
 }
 
-class MainMenuState extends State<MainMenu>
+class MainMenuState extends State<Dashboard>
     with SingleTickerProviderStateMixin {
   MenuController menuController;
 
@@ -31,7 +31,11 @@ class MainMenuState extends State<MainMenu>
 
   @override
   void dispose() {
-    menuController.dispose();
+    /**
+     * Commented out due to causing an error. 
+     * This method included is how main.dart came from flutter_delivery-master
+     */
+    //menuController.dispose();
     super.dispose();
   }
 
@@ -64,7 +68,7 @@ class MainMenuState extends State<MainMenu>
     return ChangeNotifierProvider(
       builder: (context) => menuController,
       child: ZoomScaffold(
-        menuScreen: MenuScreen(),
+        menuScreen: MenuScreen(preferences: this.getPref()),
         contentScreen: Layout(
             contentBuilder: (cc) => Scaffold(
                   /*appBar: AppBar(

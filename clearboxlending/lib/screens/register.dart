@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
-import '../helpers/constants.dart' as Constants;
-import 'login.dart';
+import 'package:clearboxlending/helpers/constants.dart' as Constants;
+import 'package:clearboxlending/screens/login.dart';
 
 class Register extends StatefulWidget {
   @override
