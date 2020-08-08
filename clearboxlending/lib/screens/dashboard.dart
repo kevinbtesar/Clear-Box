@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:clearboxlending/navigation/zoom_scaffold.dart';
 import 'package:clearboxlending/navigation/menu_fragment.dart';
+import 'package:clearboxlending/widgets/snack_bar.dart';
 
 class Dashboard extends StatefulWidget {
   //final VoidCallback signOut;
@@ -68,84 +69,30 @@ class MainMenuState extends State<Dashboard>
     return ChangeNotifierProvider(
       builder: (context) => menuController,
       child: ZoomScaffold(
-        menuScreen: MenuScreen(preferences: this.getPref()),
-        contentScreen: Layout(
+          menuScreen: MenuScreen(preferences: this.getPref()),
+          contentScreen: Layout(
             contentBuilder: (cc) => Scaffold(
-                  /*appBar: AppBar(
-                    actions: <Widget>[
-                      IconButton(
-                        onPressed: () {
-                          //signOut(context);
-                          signOut(widget._preferences);
-                        },
-                        icon: Icon(Icons.lock_open),
-                      )
-                    ],
-                    title: Text(""),
-                    automaticallyImplyLeading: false,
-                  ),*/
-                  body: Center(
-                    child: Text(
+                body: Center(
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
                       "Welcome",
                       style: TextStyle(fontSize: 30.0, color: Colors.blue),
                     ),
-                  ),
-                )),
-        preferences: this.getPref(),
-      ),
+                    RaisedButton(
+                      onPressed: () {
+                        showSnackBar(context, "Yay! It\'s Kevin\'s SnackBar!",
+                            "My Undo");
+                      },
+                      child: Text('Show Kevin\'s SnackBar'),
+                    ),
+                  ]),
+            )),
+          ),
+          preferences: this.getPref(),
+          title: "Dashboard"),
     );
-
-    //
-    /*return Scaffold(
-      appBar: AppBar(
-        actions: <Widget>[
-          IconButton(
-            onPressed: () {
-              //signOut(context);
-              signOut(widget._preferences);
-            },
-            icon: Icon(Icons.lock_open),
-          )
-        ],
-        title: Text(""),
-        automaticallyImplyLeading: false,
-      ),
-      body: Center(
-        child: Text(
-          "Welcome",
-          style: TextStyle(fontSize: 30.0, color: Colors.blue),
-        ),
-      ),
-      bottomNavigationBar: BottomNavyBar(
-        backgroundColor: Colors.black,
-        iconSize: 30.0,
-//        iconSize: MediaQuery.of(context).size.height * .60,
-        currentIndex: currentIndex,
-        onItemSelected: (index) {
-          setState(() {
-            currentIndex = index;
-          });
-          selectedIndex = 'TAB: $currentIndex';
-//            print(selectedIndex);
-          reds(selectedIndex);
-        },
-
-        items: [
-          BottomNavyBarItem(
-              icon: Icon(Icons.home),
-              title: Text('Home'),
-              activeColor: Color(0xFFf7d426)),
-          BottomNavyBarItem(
-              icon: Icon(Icons.view_list),
-              title: Text('List'),
-              activeColor: Color(0xFFf7d426)),
-          BottomNavyBarItem(
-              icon: Icon(Icons.person),
-              title: Text('Profile'),
-              activeColor: Color(0xFFf7d426)),
-        ],
-      ),
-    );*/
   }
 
   //  Action on Bottom Bar Press

@@ -7,11 +7,13 @@ class ZoomScaffold extends StatefulWidget {
   final Widget menuScreen;
   final SharedPreferences preferences;
   final Layout contentScreen;
+  final String title;
 
   ZoomScaffold({
     this.menuScreen,
     this.contentScreen,
     this.preferences,
+    this.title,
   });
 
   @override
@@ -36,33 +38,38 @@ class _ZoomScaffoldState extends State<ZoomScaffold>
         child: new Scaffold(
           backgroundColor: Colors.transparent,
           appBar: new AppBar(
-              //backgroundColor: Colors.grey[200],
-              elevation: 0.0,
-              leading: new IconButton(
-                  icon: Icon(
-                    Icons.menu,
-                    //color: Colors.black,
-                    color: Colors.white,
+            //backgroundColor: Colors.grey[200],
+            elevation: 0.0,
+            leading: new IconButton(
+                icon: Icon(
+                  Icons.menu,
+                  //color: Colors.black,
+                  color: Colors.white,
+                ),
+                onPressed: () {
+                  Provider.of<MenuController>(context, listen: true)
+                      .toggle(true);
+                }),
+            actions: <Widget>[
+              Column(
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      signOut(widget.preferences);
+                    },
+                    icon: Icon(
+                      Icons.power_settings_new,
+                      color: Colors.white,
+                    ),
                   ),
-                  onPressed: () {
-                    Provider.of<MenuController>(context, listen: true)
-                        .toggle(true);
-                  }),
-              actions: <Widget>[
-                IconButton(
-                  onPressed: () {
-                    signOut(widget.preferences);
-                  },
-                  icon: Icon(
-                    //Icons.access_time,
-                    Icons.lock_open,
-                    //color: Colors.grey,
-                    color: Colors.white,
-                  ),
-                )
-              ]),
+                ],
+              )
+            ],
+            title: Text(widget.title),
+            automaticallyImplyLeading: false,
+          ),
           body: widget.contentScreen.contentBuilder(context),
-          bottomNavigationBar: BottomNavigationBar(
+          /*bottomNavigationBar: BottomNavigationBar(
             type: BottomNavigationBarType.fixed,
             currentIndex: 0,
             items: [
@@ -82,7 +89,7 @@ class _ZoomScaffoldState extends State<ZoomScaffold>
                   title: Text(''),
                   icon: Icon(Icons.person, color: Colors.grey)),
             ],
-          ),
+          ),*/
         ),
       ),
       //child:
@@ -144,7 +151,7 @@ class _ZoomScaffoldState extends State<ZoomScaffold>
 
   //signOut(BuildContext context) async {
   signOut(SharedPreferences preferences) {
-    print("HERE signOut");
+    //print("HERE signOut");
     setState(() {
       preferences.setBool("logged_in", false);
       preferences.setString("id", null);

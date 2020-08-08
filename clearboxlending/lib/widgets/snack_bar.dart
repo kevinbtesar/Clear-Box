@@ -1,20 +1,17 @@
 import 'package:flutter/material.dart';
 
-BuildContext context;
+ScaffoldFeatureController<SnackBar, SnackBarClosedReason> showSnackBar(
+    BuildContext context, String text, String label) {
+  final snackBar = SnackBar(
+    content: Text(text),
+    action: SnackBarAction(
+      label: label,
+      onPressed: () {
+        // Some code to undo the change.
+      },
+    ),
+  );
 
-// Find the Scaffold in the widget tree and use it to show a SnackBar.
-final mSnackbar = Scaffold.of(context).showSnackBar(snackBar);
-
-final snackBar = SnackBar(
-  content: Text('Yay! A SnackBar!'),
-  action: SnackBarAction(
-    label: 'Undo',
-    onPressed: () {
-      // Some code to undo the change.
-    },
-  ),
-);
-
-ScaffoldFeatureController<SnackBar, SnackBarClosedReason> getSnackBar() {
-  return mSnackbar;
+  // Find the Scaffold in the widget tree and use it to show a SnackBar.
+  return Scaffold.of(context).showSnackBar(snackBar);
 }
