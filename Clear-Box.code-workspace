@@ -8,19 +8,5 @@
             "path": "."
         }
     ],
-    "launch": {
-        "version": "0.2.0",
-        "configurations": [
-
-            {
-                "name": "Dart",
-                "program": "clearboxlending/lib/main.dart",
-                "request": "launch",
-                "type": "dart",
-            }
-        ]
-    },
-    "settings": {
-        "java.configuration.updateBuildConfiguration": "interactive"
-    }
+    "settings": {}
 }
