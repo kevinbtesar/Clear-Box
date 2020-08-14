@@ -1,5 +1,8 @@
 //import 'package:clearboxlending/navigation/circular_image.dart';
 import 'package:clearboxlending/navigation/zoom_scaffold.dart';
+import 'package:clearboxlending/screens/dashboard.dart';
+import 'package:clearboxlending/screens/profile.dart';
+import 'package:clearboxlending/screens/register.dart';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -10,14 +13,7 @@ class MenuScreen extends StatelessWidget {
   final String imageUrl =
       "https://celebritypets.net/wp-content/uploads/2016/12/Adriana-Lima.jpg";
 
-  final List<MenuItem> options = [
-    MenuItem(Icons.dashboard, 'Dashboard'),
-    MenuItem(Icons.account_box, 'Profile'),
-    MenuItem(Icons.monetization_on, 'Get a Loan'),
-    MenuItem(Icons.library_books, 'Walk-Through'),
-  ];
-
-  MenuScreen({this.preferences});
+  MenuScreen(this.preferences);
 
   @override
   Widget build(BuildContext context) {
@@ -72,23 +68,55 @@ class MenuScreen extends StatelessWidget {
               ],
             ),
             Spacer(),
-            Column(
-              children: options.map((item) {
-                return ListTile(
-                  leading: Icon(
-                    item.icon,
-                    color: Colors.white,
-                    size: 20,
-                  ),
-                  title: Text(
-                    item.title,
-                    style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
-                  ),
+            ListTile(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => Dashboard(preferences)),
                 );
-              }).toList(),
+              },
+              leading: Icon(
+                Icons.dashboard,
+                color: Colors.white,
+                size: 20,
+              ),
+              title: Text('Dashboard',
+                  style: TextStyle(fontSize: 14, color: Colors.white)),
+            ),
+            ListTile(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => Profile(preferences)),
+                );
+              },
+              leading: Icon(
+                Icons.account_box,
+                color: Colors.white,
+                size: 20,
+              ),
+              title: Text('Profile',
+                  style: TextStyle(fontSize: 14, color: Colors.white)),
+            ),
+            ListTile(
+              onTap: () {},
+              leading: Icon(
+                Icons.monetization_on,
+                color: Colors.white,
+                size: 20,
+              ),
+              title: Text('Get a Loan',
+                  style: TextStyle(fontSize: 14, color: Colors.white)),
+            ),
+            ListTile(
+              onTap: () {},
+              leading: Icon(
+                Icons.library_books,
+                color: Colors.white,
+                size: 20,
+              ),
+              title: Text('Walk Through',
+                  style: TextStyle(fontSize: 14, color: Colors.white)),
             ),
             Spacer(),
             ListTile(
