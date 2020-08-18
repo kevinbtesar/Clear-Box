@@ -8,8 +8,6 @@ import 'package:clearboxlending/navigation/zoom_scaffold.dart';
 import 'package:clearboxlending/navigation/menu_fragment.dart';
 import 'package:clearboxlending/widgets/snack_bar.dart';
 
-
-
 class Dashboard extends StatefulWidget {
   //final VoidCallback signOut;
   final SharedPreferences _preferences;
@@ -175,7 +173,8 @@ class MainMenuState extends State<Dashboard>
                                   fontWeight: FontWeight.w700,
                                   fontSize: 24.0)),
                           Text('Get a \$20 for 1 week.',
-                              style: TextStyle(color: Colors.black45, fontSize: 12.0)),
+                              style: TextStyle(
+                                  color: Colors.black45, fontSize: 12.0)),
                         ]),
                   ),
                 ),
@@ -254,13 +253,15 @@ class MainMenuState extends State<Dashboard>
                   ),
                   onTap: () => {},
                 ),
-                RaisedButton(
-                  onPressed: () {
-                    showSnackBar(
-                        context, "Yay! It\'s Kevin\'s SnackBar!", "My Undo");
-                  },
-                  child: Text('Show Kevin\'s SnackBar'),
-                ),
+                Builder(
+                    builder: (context) => Center(
+                            child: RaisedButton(
+                          onPressed: () {
+                            showSnackBar(context,
+                                "Yay! It\'s Kevin\'s SnackBar!", "My Undo");
+                          },
+                          child: Text('Show Kevin\'s SnackBar'),
+                        ))),
               ],
               staggeredTiles: [
                 StaggeredTile.extent(2, 110.0),
