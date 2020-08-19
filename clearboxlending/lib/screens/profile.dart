@@ -358,7 +358,7 @@ class ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                                       child: TextFormField(
                                         validator: (e) {
                                           if (e.isEmpty) {
-                                            return "Please insert your email address";
+                                            return "Please insert your street address";
                                           }
                                         },
                                         onSaved: (e) => firstName = e,
@@ -375,7 +375,36 @@ class ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                                                   color: Colors.black),
                                             ),
                                             contentPadding: EdgeInsets.all(18),
-                                            labelText: "Address"),
+                                            labelText: "Street Address"),
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.only(
+                                        left: 25.0, right: 25.0, top: 2.0),
+                                    child: new Card(
+                                      elevation: 6.0,
+                                      child: TextFormField(
+                                        validator: (e) {
+                                          if (e.isEmpty) {
+                                            return "Please insert your city";
+                                          }
+                                        },
+                                        onSaved: (e) => firstName = e,
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w300,
+                                        ),
+                                        decoration: InputDecoration(
+                                            prefixIcon: Padding(
+                                              padding: EdgeInsets.only(
+                                                  left: 20, right: 15),
+                                              child: Icon(Icons.mail,
+                                                  color: Colors.black),
+                                            ),
+                                            contentPadding: EdgeInsets.all(18),
+                                            labelText: "City"),
                                       ),
                                     ),
                                   ),
@@ -393,15 +422,16 @@ class ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                                                         prefixIcon: Padding(
                                                           padding:
                                                               EdgeInsets.only(
-                                                                  left: 10,
-                                                                  right: 10),
+                                                                  left: 20,
+                                                                  right: 15),
                                                           child: Icon(
                                                               Icons.mail,
                                                               color:
                                                                   Colors.black),
                                                         ),
                                                         contentPadding:
-                                                            EdgeInsets.all(16),
+                                                            EdgeInsets.fromLTRB(
+                                                                6, 10, 6, 20),
                                                         labelText: "State"),
                                                     isDense: true,
                                                     value: actualDropdown,
@@ -465,13 +495,227 @@ class ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                                           ),
                                         ],
                                       )),
+                                  Padding(
+                                      padding: EdgeInsets.only(
+                                          left: 25.0, right: 25.0, top: 25.0),
+                                      child: new Row(
+                                        mainAxisSize: MainAxisSize.max,
+                                        children: <Widget>[
+                                          new Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: <Widget>[
+                                              new Text(
+                                                'Upload Documents',
+                                                style: TextStyle(
+                                                    fontSize: 16.0,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      )),
+                                  Padding(
+                                    padding: EdgeInsets.only(
+                                        left: 25.0, right: 25.0, top: 2.0),
+                                    child: new Card(
+                                      elevation: 6.0,
+                                      child: Container(
+                                        margin:
+                                            EdgeInsets.fromLTRB(10, 15, 10, 15),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: <Widget>[
+                                            Image.asset(
+                                                'assets/images/checked-empty.png'),
+                                            Padding(
+                                                padding: EdgeInsets.only(
+                                                    left: 4, right: 2)),
+                                            Container(
+                                              width: 150,
+                                              child: Text(
+                                                'Driver\'s Liscense or State ID',
+                                                style: TextStyle(
+                                                    color: Colors.black54,
+                                                    fontSize: 16,
+                                                    fontWeight:
+                                                        FontWeight.w600),
+                                              ),
+                                            ),
+                                            new Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: <Widget>[
+                                                Icon(Icons.image),
+                                                new Text(
+                                                  'Gallery',
+                                                  style: TextStyle(
+                                                      fontSize: 16.0,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                              ],
+                                            ),
+                                            Padding(
+                                                padding:
+                                                    EdgeInsets.only(left: 15)),
+                                            new Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: <Widget>[
+                                                Icon(Icons.camera_alt),
+                                                new Text(
+                                                  'Camera',
+                                                  style: TextStyle(
+                                                      fontSize: 16.0,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.only(
+                                        left: 25.0, right: 25.0, top: 2.0),
+                                    child: new Card(
+                                      elevation: 6.0,
+                                      child: Container(
+                                        margin:
+                                            EdgeInsets.fromLTRB(10, 15, 10, 15),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: <Widget>[
+                                            Image.asset(
+                                                'assets/images/checked-empty.png'),
+                                            Padding(
+                                                padding:
+                                                    EdgeInsets.only(left: 6)),
+                                            Container(
+                                              width: 150,
+                                              child: Text(
+                                                'Paystub - Not older than a month',
+                                                style: TextStyle(
+                                                    color: Colors.black54,
+                                                    fontSize: 16,
+                                                    fontWeight:
+                                                        FontWeight.w600),
+                                              ),
+                                            ),
+                                            new Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: <Widget>[
+                                                Icon(Icons.image),
+                                                new Text(
+                                                  'Gallery',
+                                                  style: TextStyle(
+                                                      fontSize: 16.0,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                              ],
+                                            ),
+                                            Padding(
+                                                padding:
+                                                    EdgeInsets.only(left: 15)),
+                                            new Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: <Widget>[
+                                                Icon(Icons.camera_alt),
+                                                new Text(
+                                                  'Camera',
+                                                  style: TextStyle(
+                                                      fontSize: 16.0,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                      padding: EdgeInsets.only(
+                                          left: 25.0, right: 25.0, top: 25.0),
+                                      child: new Row(
+                                        mainAxisSize: MainAxisSize.max,
+                                        children: <Widget>[
+                                          new Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: <Widget>[
+                                              new Text(
+                                                'PayPal',
+                                                style: TextStyle(
+                                                    fontSize: 16.0,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      )),
+                                  Padding(
+                                    padding: EdgeInsets.only(
+                                        left: 25.0, right: 25.0, top: 2.0),
+                                    child: new Card(
+                                      elevation: 6.0,
+                                      child: Container(
+                                        margin:
+                                            EdgeInsets.fromLTRB(10, 15, 10, 15),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: <Widget>[
+                                            Image.asset(
+                                                'assets/images/checked-empty.png'),
+                                            Padding(
+                                                padding:
+                                                    EdgeInsets.only(left: 8)),
+                                            Container(
+                                              width: 150,
+                                              child: Text(
+                                                'Link your PayPal account',
+                                                style: TextStyle(
+                                                    color: Colors.black54,
+                                                    fontSize: 16,
+                                                    fontWeight:
+                                                        FontWeight.w600),
+                                              ),
+                                            ),
+                                            Container(
+                                              width: 100,
+                                              child: Image.asset(
+                                                  'assets/images/PayPal.png'),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
                                   !_status
                                       ? _getActionButtons()
                                       : new Container(),
                                 ],
                               ),
                             ),
-                          )
+                          ),
                         ],
                       ),
                     ],
