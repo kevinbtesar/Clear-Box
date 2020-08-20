@@ -7,6 +7,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:image_picker/image_picker.dart';
+
+import 'package:async/async.dart';
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+//import 'package:path/path.dart';
+import 'package:http/http.dart' as http;
+import 'dart:io';
+
+import 'dart:math' as Math;
+import 'package:path_provider/path_provider.dart';
+import 'package:image/image.dart' as Img;
 
 class Profile extends StatefulWidget {
   final SharedPreferences preferences;
@@ -18,6 +30,7 @@ class Profile extends StatefulWidget {
 
 class ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
   MenuController menuController;
+  File _image;
 
   //static final List<String> chartDropdownItems = ['All', 'Personal', 'Off'];
   String actualDropdown = stateDropdownItems[0];
@@ -616,7 +629,15 @@ class ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                                                   MainAxisAlignment.start,
                                               mainAxisSize: MainAxisSize.min,
                                               children: <Widget>[
-                                                Icon(Icons.image),
+                                                IconButton(
+                                                  onPressed: () {
+                                                    //signOut(widget.preferences);
+                                                  },
+                                                  icon: Icon(
+                                                    Icons.image,
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
                                                 new Text(
                                                   'Gallery',
                                                   style: TextStyle(
@@ -803,5 +824,25 @@ class ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
         });
       },
     );
+  }
+
+  Future getImageCamera() async {
+    var imageFile = await ImagePicker.platform.pickImage(source: null);
+
+    final tempDir = await getTemporaryDirectory();
+    final path = tempDir.path;
+
+    int rand = new Math.Random().nextInt(100000);
+
+    //Img.Image image = Img.decodeImage(imageFile.readAsBytesSync());
+    Img.Image image = Img.decodeImage(imageFile.readAsBytes());
+    Img.Image smallerImg = Img.copyResize(image /*, 500*/);
+
+    var compressImg = new File("$path/image_$rand.jpg")
+      ..writeAsBytesSync(Img.encodeJpg(smallerImg, quality: 85));
+
+    setState(() {
+      _image = compressImg;
+    });
   }
 }
