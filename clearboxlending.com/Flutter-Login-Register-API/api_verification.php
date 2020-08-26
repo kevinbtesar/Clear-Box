@@ -368,11 +368,11 @@ try {
 
 	/* Debugging info */
 
-	output_error_log('api_verification.php - Switch\'s try/catch block', 'Error: ' . $e);
-	output_error_log("api_verification.php", 'debugDumpParams: ' . $pdo->debugDumpParams . ' sql: ' . sql_debug($query, $params));
+	output_error_log('api_main.php - Switch\'s try/catch block', 'Error: ' . $e);
+	output_error_log("api_main.php", 'debugDumpParams: ' . $pdo->debugDumpParams . ' sql: ' . sql_debug($query, $params));
 	$databaseErrors = $inserted->errorInfo();
 	$errorInfo = json_encode($databaseErrors);
-	output_error_log("api_verification.php", $errorInfo);
+	output_error_log("api_main.php", $errorInfo);
 }
 
 $pdo=null; // Close SQL connection

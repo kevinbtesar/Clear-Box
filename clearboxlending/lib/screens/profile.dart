@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:clearboxlending/navigation/menu_fragment.dart';
 import 'package:clearboxlending/navigation/zoom_scaffold.dart';
 import 'package:clearboxlending/helpers/constants.dart';
+import 'package:clearboxlending/widgets/snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
@@ -14,7 +15,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 //import 'package:path/path.dart';
 import 'package:http/http.dart' as http;
-import 'dart:io';
+import 'dart:io' as Io;
+import 'dart:convert';
 
 import 'dart:math' as Math;
 import 'package:path_provider/path_provider.dart';
@@ -30,7 +32,8 @@ class Profile extends StatefulWidget {
 
 class ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
   MenuController menuController;
-  File _image;
+  Io.File _image;
+  final picker = ImagePicker();
 
   //static final List<String> chartDropdownItems = ['All', 'Personal', 'Off'];
   String actualDropdown = stateDropdownItems[0];
@@ -550,7 +553,7 @@ class ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                                             Container(
                                               width: 150,
                                               child: Text(
-                                                'Driver\'s Liscense or State ID',
+                                                'Driver\'s License or State ID',
                                                 style: TextStyle(
                                                     color: Colors.black54,
                                                     fontSize: 16,
@@ -631,11 +634,11 @@ class ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                                               children: <Widget>[
                                                 IconButton(
                                                   onPressed: () {
-                                                    //signOut(widget.preferences);
+                                                    getImageCamera("paystub");
                                                   },
                                                   icon: Icon(
                                                     Icons.image,
-                                                    color: Colors.white,
+                                                    color: Colors.black,
                                                   ),
                                                 ),
                                                 new Text(
@@ -826,23 +829,57 @@ class ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
     );
   }
 
-  Future getImageCamera() async {
-    var imageFile = await ImagePicker.platform.pickImage(source: null);
+  Future getImageCamera(String metaKey) async {
+    var imageFile = await picker.getImage(source: ImageSource.gallery);
 
     final tempDir = await getTemporaryDirectory();
     final path = tempDir.path;
 
     int rand = new Math.Random().nextInt(100000);
 
-    //Img.Image image = Img.decodeImage(imageFile.readAsBytesSync());
-    Img.Image image = Img.decodeImage(imageFile.readAsBytes());
-    Img.Image smallerImg = Img.copyResize(image /*, 500*/);
+    Img.Image image =
+        Img.decodeImage(Io.File(imageFile.path).readAsBytesSync());
+    Img.Image smallerImg = Img.copyResize(image, width: 500);
 
-    var compressImg = new File("$path/image_$rand.jpg")
+    var name = "$path/image_$rand.jpg";
+    var compressImg = new Io.File(name)
       ..writeAsBytesSync(Img.encodeJpg(smallerImg, quality: 85));
 
-    setState(() {
+    /*setState(() {
       _image = compressImg;
+    });*/
+
+    final uri = Uri.parse(
+        API_BASE_URL + API_MAIN + "?" + API_URL_KEY + "=" + API_URL_VALUE);
+    var request = http.MultipartRequest('POST', uri);
+    request.fields['action_flag'] = "3";
+    request.fields['id'] = widget.preferences.getString("id");
+    request.fields['meta_key'] = metaKey;
+    request.fields['name'] = name;
+    var pic = await http.MultipartFile.fromPath("image", compressImg.path);
+    request.files.add(pic);
+
+    // gotten from https://stackoverflow.com/questions/49125191/how-to-upload-images-and-file-to-a-server-in-flutter
+    var response = await request.send().then((response) async {
+      // listen for response
+      response.stream.transform(utf8.decoder).listen((value) {
+        print(value);
+      });
+
+    }).catchError((e) {
+      print(e);
     });
+
+    var responseMessage = "";
+    if (response.statusCode == 200) {
+      responseMessage = 'Image Uploaded';
+    } else {
+      responseMessage = 'Image Not Uploaded';
+    }
+
+    String apiMessage = data['api_message'];
+    String apiStatus = data['api_status'];
+
+    showSnackBar(context, responseMessage + " apiMessage: " + apiMessage, "");
   }
 }

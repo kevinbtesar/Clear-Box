@@ -8,10 +8,10 @@ const PASS_ERROR_EMPTY = "Password cannot be empty";
 const GO_TO_REGISTER = "Go to Register";
 
 // API related
-const API_BASE_URL = "https://clearboxlending.com/Flutter-Login-Register-API/";
+const API_BASE_URL = "https://clearboxlending.com/api/";
 const API_URL_KEY = "password_secret";
 const API_URL_VALUE = "clearBoxLendingIsTheBestLendingCompanyEVER2468642";
-const API_VERIFICATION = "api_verification.php";
+const API_MAIN = "api_main.php";
 
 // Email Reset API related
 const LOST_PASSWORD =

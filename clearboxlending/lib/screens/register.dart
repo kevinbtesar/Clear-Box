@@ -35,7 +35,7 @@ class _RegisterState extends State<Register> {
   save() async {
     final response = await http.post(
         Constants.API_BASE_URL +
-            Constants.API_VERIFICATION +
+            Constants.API_MAIN +
             "?" +
             Constants.API_URL_KEY +
             "=" +
@@ -53,7 +53,7 @@ class _RegisterState extends State<Register> {
     final data = jsonDecode(response.body);
 
     /**
-     * Check value field for invalid registration. Anything besides 1 means unsuccessful.
+     * Check value field for invalid registration.
      * Message field will contain success or fail message.
      */
 

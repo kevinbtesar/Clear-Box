@@ -217,7 +217,6 @@ class LoginState extends State<Login> {
       );
     } else {
       return new Dashboard(/*signOut*/ _preferences);
-      //return ProfilePage(signOut);
     }
   }
 
@@ -238,7 +237,7 @@ class LoginState extends State<Login> {
   login() async {
     final response = await http.post(
         Constants.API_BASE_URL +
-            Constants.API_VERIFICATION +
+            Constants.API_MAIN +
             "?" +
             Constants.API_URL_KEY +
             "=" +
@@ -305,39 +304,6 @@ class LoginState extends State<Login> {
       _loggedIn = _preferences.getBool("logged_in") ?? false;
     });
   }
-
-  /* Scheduled for deletion. 
-     Decided to not use REST for password recovery.
-
-  resetPassword() async {
-    int apiStatus = 500;
-    String apiMessage = '';
-
-    if (emailController.text != null) {
-      _email = emailController.text;
-      final response = await http.post(Constants.EMAIL_RESET_API_URL, body: {
-        //"action_flag": 1.toString(),
-        "email": _email,
-      });
-
-      final data = jsonDecode(response.body);
-      apiStatus = data['data']['status'] ?? 500;
-      apiMessage = data['message'] ??
-          "If email address was found, an email containing your reset link will be sent to it.";
-      //String firstName = data['first_name'];
-
-    } else {
-      apiMessage = 'Email cannot be empty';
-    }
-
-    if (apiStatus != 200) {
-      apiMessage = "Network connection not found";
-    }
-    print(apiMessage);
-    loginToast(apiMessage);
-  }
-  */
-
   _launchURL() async {
     const url = Constants.LOST_PASSWORD;
     if (await canLaunch(url)) {

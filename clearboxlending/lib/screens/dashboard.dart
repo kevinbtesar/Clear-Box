@@ -167,11 +167,11 @@ class MainMenuState extends State<Dashboard>
                                     color: Colors.white, size: 30.0),
                               )),
                           Padding(padding: EdgeInsets.only(bottom: 16.0)),
-                          Text('Loan \$20',
+                          Text('Borrow \$20',
                               style: TextStyle(
                                   color: Colors.black,
                                   fontWeight: FontWeight.w700,
-                                  fontSize: 24.0)),
+                                  fontSize: 23.0)),
                           Text('Get a \$20 for 1 week.',
                               style: TextStyle(
                                   color: Colors.black45, fontSize: 12.0)),
