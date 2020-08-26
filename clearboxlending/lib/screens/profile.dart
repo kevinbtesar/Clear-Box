@@ -34,8 +34,7 @@ class ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
   MenuController menuController;
   Io.File _image;
   final picker = ImagePicker();
-
-  //static final List<String> chartDropdownItems = ['All', 'Personal', 'Off'];
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
   String actualDropdown = stateDropdownItems[0];
   int actualChart = 0;
 
@@ -56,6 +55,7 @@ class ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     String firstName, lastName, email, phone, password;
+ 
 
     return ChangeNotifierProvider(
       builder: (context) => menuController,
@@ -63,6 +63,7 @@ class ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
         menuScreen: MenuScreen(widget.preferences),
         contentScreen: Layout(
             contentBuilder: (cc) => Scaffold(
+              key: _scaffoldKey,
                     body: new Container(
                   color: Colors.white,
                   child: new ListView(
@@ -634,6 +635,7 @@ class ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                                               children: <Widget>[
                                                 IconButton(
                                                   onPressed: () {
+                                              
                                                     getImageCamera("paystub");
                                                   },
                                                   icon: Icon(
@@ -830,6 +832,7 @@ class ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
   }
 
   Future getImageCamera(String metaKey) async {
+    var responseMessage = "";
     var imageFile = await picker.getImage(source: ImageSource.gallery);
 
     final tempDir = await getTemporaryDirectory();
@@ -860,26 +863,27 @@ class ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
     request.files.add(pic);
 
     // gotten from https://stackoverflow.com/questions/49125191/how-to-upload-images-and-file-to-a-server-in-flutter
-    var response = await request.send().then((response) async {
+    await request.send().then((response) async {
       // listen for response
       response.stream.transform(utf8.decoder).listen((value) {
-        print(value);
+        print("value: " + value);
+        responseMessage = "Success! value: " + value;
       });
 
-    }).catchError((e) {
-      print(e);
+      if (response.statusCode == 200) {
+        responseMessage = responseMessage + ' Image Uploaded';
+      } else {
+        responseMessage = responseMessage +
+            'Image Not Uploaded. Status code: ' +
+            response.statusCode.toString();
+      }
+    }).catchError((error) {
+      print("error: " + error);
+      responseMessage = "Error! error: " + error;
     });
 
-    var responseMessage = "";
-    if (response.statusCode == 200) {
-      responseMessage = 'Image Uploaded';
-    } else {
-      responseMessage = 'Image Not Uploaded';
-    }
-
-    String apiMessage = data['api_message'];
-    String apiStatus = data['api_status'];
-
-    showSnackBar(context, responseMessage + " apiMessage: " + apiMessage, "");
+    //String apiMessage = data['api_message'];
+    //String apiStatus = data['api_status'];
+    getSnackBar(_scaffoldKey, responseMessage);
   }
 }
