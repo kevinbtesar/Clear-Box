@@ -55,7 +55,6 @@ class ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     String firstName, lastName, email, phone, password;
- 
 
     return ChangeNotifierProvider(
       builder: (context) => menuController,
@@ -63,8 +62,8 @@ class ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
         menuScreen: MenuScreen(widget.preferences),
         contentScreen: Layout(
             contentBuilder: (cc) => Scaffold(
-              key: _scaffoldKey,
-                    body: new Container(
+                key: _scaffoldKey,
+                body: new Container(
                   color: Colors.white,
                   child: new ListView(
                     children: <Widget>[
@@ -567,13 +566,30 @@ class ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                                                   MainAxisAlignment.start,
                                               mainAxisSize: MainAxisSize.min,
                                               children: <Widget>[
-                                                Icon(Icons.image),
-                                                new Text(
-                                                  'Gallery',
-                                                  style: TextStyle(
-                                                      fontSize: 16.0,
-                                                      fontWeight:
-                                                          FontWeight.bold),
+                                                SizedBox(
+                                                  height: 32.0,
+                                                  child: IconButton(
+                                                    onPressed: () {
+                                                      getImageCamera(
+                                                          "id_doc", 0);
+                                                    },
+                                                    icon: Icon(
+                                                      Icons.image,
+                                                      color: Colors.black,
+                                                    ),
+                                                  ),
+                                                ),
+                                                GestureDetector(
+                                                  onTap: () {
+                                                    getImageCamera("id_doc", 0);
+                                                  },
+                                                  child: Text(
+                                                    'Gallery',
+                                                    style: TextStyle(
+                                                        fontSize: 16.0,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
                                                 ),
                                               ],
                                             ),
@@ -585,13 +601,30 @@ class ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                                                   MainAxisAlignment.start,
                                               mainAxisSize: MainAxisSize.min,
                                               children: <Widget>[
-                                                Icon(Icons.camera_alt),
-                                                new Text(
-                                                  'Camera',
-                                                  style: TextStyle(
-                                                      fontSize: 16.0,
-                                                      fontWeight:
-                                                          FontWeight.bold),
+                                                SizedBox(
+                                                  height: 32.0,
+                                                  child: IconButton(
+                                                    onPressed: () {
+                                                      getImageCamera(
+                                                          "id_doc", 1);
+                                                    },
+                                                    icon: Icon(
+                                                      Icons.camera_alt,
+                                                      color: Colors.black,
+                                                    ),
+                                                  ),
+                                                ),
+                                                GestureDetector(
+                                                  onTap: () {
+                                                    getImageCamera("id_doc", 1);
+                                                  },
+                                                  child: Text(
+                                                    'Camera',
+                                                    style: TextStyle(
+                                                        fontSize: 16.0,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
                                                 ),
                                               ],
                                             ),
@@ -633,22 +666,31 @@ class ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                                                   MainAxisAlignment.start,
                                               mainAxisSize: MainAxisSize.min,
                                               children: <Widget>[
-                                                IconButton(
-                                                  onPressed: () {
-                                              
-                                                    getImageCamera("paystub");
-                                                  },
-                                                  icon: Icon(
-                                                    Icons.image,
-                                                    color: Colors.black,
+                                                SizedBox(
+                                                  height: 32.0,
+                                                  child: IconButton(
+                                                    onPressed: () {
+                                                      getImageCamera(
+                                                          "paystub", 0);
+                                                    },
+                                                    icon: Icon(
+                                                      Icons.image,
+                                                      color: Colors.black,
+                                                    ),
                                                   ),
                                                 ),
-                                                new Text(
-                                                  'Gallery',
-                                                  style: TextStyle(
-                                                      fontSize: 16.0,
-                                                      fontWeight:
-                                                          FontWeight.bold),
+                                                GestureDetector(
+                                                  onTap: () {
+                                                    getImageCamera(
+                                                        "paystub", 0);
+                                                  },
+                                                  child: Text(
+                                                    'Gallery',
+                                                    style: TextStyle(
+                                                        fontSize: 16.0,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
                                                 ),
                                               ],
                                             ),
@@ -660,13 +702,31 @@ class ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                                                   MainAxisAlignment.start,
                                               mainAxisSize: MainAxisSize.min,
                                               children: <Widget>[
-                                                Icon(Icons.camera_alt),
-                                                new Text(
-                                                  'Camera',
-                                                  style: TextStyle(
-                                                      fontSize: 16.0,
-                                                      fontWeight:
-                                                          FontWeight.bold),
+                                                SizedBox(
+                                                  height: 32.0,
+                                                  child: IconButton(
+                                                    onPressed: () {
+                                                      getImageCamera(
+                                                          "paystub", 1);
+                                                    },
+                                                    icon: Icon(
+                                                      Icons.camera_alt,
+                                                      color: Colors.black,
+                                                    ),
+                                                  ),
+                                                ),
+                                                GestureDetector(
+                                                  onTap: () {
+                                                    getImageCamera(
+                                                        "paystub", 1);
+                                                  },
+                                                  child: Text(
+                                                    'Camera',
+                                                    style: TextStyle(
+                                                        fontSize: 16.0,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
                                                 ),
                                               ],
                                             ),
@@ -831,59 +891,63 @@ class ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
     );
   }
 
-  Future getImageCamera(String metaKey) async {
+  Future getImageCamera(String metaKey, int source) async {
     var responseMessage = "";
-    var imageFile = await picker.getImage(source: ImageSource.gallery);
+    var imageFile;
+    // 0 - gallery
+    // 1 - camera
+    if (source == 0)
+      imageFile = await picker.getImage(source: ImageSource.gallery);
+    else if (source == 1)
+      imageFile = await picker.getImage(source: ImageSource.camera);
 
-    final tempDir = await getTemporaryDirectory();
-    final path = tempDir.path;
+    if (imageFile != null) {
+      final tempDir = await getTemporaryDirectory();
+      final path = tempDir.path;
 
-    int rand = new Math.Random().nextInt(100000);
+      int rand = new Math.Random().nextInt(100000);
+      Img.Image image =
+          Img.decodeImage(Io.File(imageFile.path).readAsBytesSync());
+      Img.Image smallerImg = Img.copyResize(image, width: 500);
 
-    Img.Image image =
-        Img.decodeImage(Io.File(imageFile.path).readAsBytesSync());
-    Img.Image smallerImg = Img.copyResize(image, width: 500);
+      var name = "$path/image_$rand.jpg";
+      var compressImg = new Io.File(name)
+        ..writeAsBytesSync(Img.encodeJpg(smallerImg, quality: 85));
 
-    var name = "$path/image_$rand.jpg";
-    var compressImg = new Io.File(name)
-      ..writeAsBytesSync(Img.encodeJpg(smallerImg, quality: 85));
+      final uri = Uri.parse(
+          API_BASE_URL + API_MAIN + "?" + API_URL_KEY + "=" + API_URL_VALUE);
+      var request = http.MultipartRequest('POST', uri);
+      request.fields['action_flag'] = "3";
+      request.fields['id'] = widget.preferences.getString("id");
+      request.fields['meta_key'] = metaKey;
+      //request.fields['name'] = name;
 
-    /*setState(() {
-      _image = compressImg;
-    });*/
+      // gotten from https://stackoverflow.com/questions/49125191/how-to-upload-images-and-file-to-a-server-in-flutter
+      var pic = await http.MultipartFile.fromPath("image", compressImg.path);
+      request.files.add(pic);
 
-    final uri = Uri.parse(
-        API_BASE_URL + API_MAIN + "?" + API_URL_KEY + "=" + API_URL_VALUE);
-    var request = http.MultipartRequest('POST', uri);
-    request.fields['action_flag'] = "3";
-    request.fields['id'] = widget.preferences.getString("id");
-    request.fields['meta_key'] = metaKey;
-    request.fields['name'] = name;
-    var pic = await http.MultipartFile.fromPath("image", compressImg.path);
-    request.files.add(pic);
+      await request.send().then((response) async {
+        // listen for response
+        response.stream.transform(utf8.decoder).listen((value) {
+          print("value: " + value);
+          responseMessage = "Success! value: " + value;
+        });
 
-    // gotten from https://stackoverflow.com/questions/49125191/how-to-upload-images-and-file-to-a-server-in-flutter
-    await request.send().then((response) async {
-      // listen for response
-      response.stream.transform(utf8.decoder).listen((value) {
-        print("value: " + value);
-        responseMessage = "Success! value: " + value;
+        if (response.statusCode == 200) {
+          responseMessage = responseMessage + ' - Image Uploaded';
+        } else {
+          responseMessage = responseMessage +
+              'Image Not Uploaded. Status code: ' +
+              response.statusCode.toString();
+        }
+      }).catchError((error) {
+        print("error: " + error);
+        responseMessage = "Error! error: " + error;
       });
 
-      if (response.statusCode == 200) {
-        responseMessage = responseMessage + ' Image Uploaded';
-      } else {
-        responseMessage = responseMessage +
-            'Image Not Uploaded. Status code: ' +
-            response.statusCode.toString();
-      }
-    }).catchError((error) {
-      print("error: " + error);
-      responseMessage = "Error! error: " + error;
-    });
-
-    //String apiMessage = data['api_message'];
-    //String apiStatus = data['api_status'];
-    getSnackBar(_scaffoldKey, responseMessage);
+      //String apiMessage = data['api_message'];
+      //String apiStatus = data['api_status'];
+      getSnackBar(_scaffoldKey, responseMessage);
+    }
   }
 }
