@@ -486,7 +486,7 @@ class ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                                               child: TextFormField(
                                                 validator: (e) {
                                                   if (e.isEmpty) {
-                                                    return "Please insert your zip code";
+                                                    return "Insert your zip code";
                                                   }
                                                 },
                                                 onSaved: (e) => firstName = e,
