@@ -1,15 +1,18 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:uni_links/uni_links.dart';
 
 import 'package:clearboxlending/helpers/constants.dart' as Constants;
 import 'package:clearboxlending/screens/register.dart';
 import 'package:clearboxlending/screens/dashboard.dart';
-
 
 class Login extends StatefulWidget {
   @override
@@ -21,6 +24,7 @@ class LoginState extends State<Login> {
   bool _secureText = true;
   String _email, _password;
   SharedPreferences _preferences;
+  StreamSubscription _sub;
 
   final _key = new GlobalKey<FormState>();
   final _globalKey = new GlobalKey<ScaffoldState>();
@@ -45,10 +49,12 @@ class LoginState extends State<Login> {
   void dispose() {
     // Clean up the controller when the widget is disposed.
     emailController.dispose();
+    _sub.cancel();
     super.dispose();
   }
 
   Widget _login() {
+       initUniLinks();
     if (_loggedIn == null || _loggedIn == false) {
       return Scaffold(
         backgroundColor: Colors.black,
@@ -70,18 +76,30 @@ class LoginState extends State<Login> {
                         Image.network(
                             "http://scratchpads.eu/sites/all/themes/scratchpads_eu/images/sponsor-logo-ner.png"),
                         SizedBox(
-                          height: 40,
+                          height: 20,
+                        ),
+                        FlatButton(
+                          onPressed: () {
+                            login("paypal");
+                          },
+                          child: Image.asset(
+                            'assets/images/connectwithpaypalbutton.png',
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 20,
                         ),
                         SizedBox(
                           height: 50,
                           child: Text(
-                            "Login",
+                            "Or Login",
                             style:
                                 TextStyle(color: Colors.white, fontSize: 30.0),
                           ),
                         ),
                         SizedBox(
-                          height: 25,
+                          height: 10,
                         ),
 
                         //card for Email TextFormField
@@ -151,7 +169,7 @@ class LoginState extends State<Login> {
 
                         FlatButton(
                           onPressed: () {
-                            _launchURL();
+                            _launchURL(Constants.LOST_PASSWORD);
                           },
                           child: Text(
                             "Forgot Password?",
@@ -230,49 +248,74 @@ class LoginState extends State<Login> {
     final form = _key.currentState;
     if (form.validate()) {
       form.save();
-      login();
+      login("manual");
     }
   }
 
-  login() async {
-    final response = await http.post(
-        Constants.API_BASE_URL +
-            Constants.API_MAIN +
-            "?" +
-            Constants.API_URL_KEY +
-            "=" +
-            Constants.API_URL_VALUE,
-        body: {
-          "action_flag": 1.toString(),
-          "email": _email,
-          "password": _password,
-          //"fcm_token": "test_fcm_token"
-        });
+  login(String type) async {
+    String apiStatus = "fail";
+    String apiMessage = "No response found";
+
+    http.Response response;
+    if (type == "manual") {
+      response = await http.post(
+          Constants.API_BASE_URL +
+              Constants.API_MAIN +
+              "?" +
+              Constants.API_URL_KEY +
+              "=" +
+              Constants.API_URL_VALUE,
+          body: {
+            "action_flag": 1.toString(),
+            "email": _email,
+            "password": _password,
+            //"fcm_token": "test_fcm_token"
+          });
+    } else {
+      response = await http.post(
+          Constants.API_BASE_URL +
+              "paypal/" +
+              Constants.API_PAYPAL +
+              "?" +
+              Constants.API_URL_KEY +
+              "=" +
+              Constants.API_URL_VALUE,
+          body: {});
+    }
 
     // PHP ERRORS?
-    // Step 1. Comment out ob_get_clean() in api_verfication.php to see body of errors.
+    // Step 1. Comment out ob_get_clean() in api_main.php to see body of errors.
     // Step 2. Add break to `jsonDecode(response.body);`
     // Step 3. in Debug List of variables, find outer body variable. Right click, and copy value.
-    final data =
-        jsonDecode(response.body); // <- break here to see body of PHP errors
-    String apiStatus = data['api_status'];
-    String apiMessage = data['api_message'];
-    _email = data['email'];
-    String firstName = data['first_name'];
-    String lastName = data['last_name'];
-    String id = data['id'].toString();
-    String phone = data['phone'];
-    String userStatus = data['user_status'];
+    if (response.body != null && response.body.isNotEmpty) {
+      final data =
+          jsonDecode(response.body); // <- break here to see body of PHP errors
+      if (data['redirect_url'] != null) {
+        apiStatus = data['api_status'];
+        apiMessage = data['api_message'];
 
-    if (apiStatus == 'success') {
-      setState(() {
-        _loggedIn = true;
-
-        savePref(_email, firstName, lastName, id);
-      });
+        String url = data['redirect_url'];
+        _launchURL(url);
+      } else {
+        _email = data['email'];
+        String firstName = data['first_name'];
+        String lastName = data['last_name'];
+        String id = data['id'].toString();
+        String phone = data['phone'];
+        String userStatus = data['user_status'];
+        if (apiStatus == 'success') {
+          setState(() {
+            _loggedIn = true;
+            savePref(_email, firstName, lastName, id);
+          });
+        } else {
+          print("fail");
+        }
+      }
     } else {
       print("fail");
     }
+
     print(apiMessage);
     loginToast(apiMessage);
   }
@@ -304,12 +347,38 @@ class LoginState extends State<Login> {
       _loggedIn = _preferences.getBool("logged_in") ?? false;
     });
   }
-  _launchURL() async {
-    const url = Constants.LOST_PASSWORD;
+
+  _launchURL(String url) async {
     if (await canLaunch(url)) {
       await launch(url);
     } else {
       throw 'Could not launch $url';
     }
+  }
+
+  Future<Null> initUniLinks() async {
+    // ... check initialLink
+    print("initUniLinks ");
+    try {
+      String initialLink = await getInitialLink();
+      print("initUniLinks link: " + initialLink);
+      // Parse the link and warn the user, if it is not correct,
+      // but keep in mind it could be `null`.
+    } on PlatformException {
+      // Handle exception by warning the user their action did not succeed
+      // return?
+      print("action did not succeed");
+    }
+
+    // Attach a listener to the stream
+    _sub = getLinksStream().listen((String link) {
+      // Parse the link and warn the user, if it is not correct
+      print("initUniLinks link: " + link);
+    }, onError: (err) {
+      // Handle exception by warning the user their action did not succeed
+      print("action did not succeed Error: " + err.toString());
+    });
+
+    // NOTE: Don't forget to call _sub.cancel() in dispose()
   }
 }
