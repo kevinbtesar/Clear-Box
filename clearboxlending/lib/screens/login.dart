@@ -24,7 +24,11 @@ class LoginState extends State<Login> {
   bool _secureText = true;
   String _email, _password;
   SharedPreferences _preferences;
-  StreamSubscription _sub;
+  StreamSubscription _linkStreamSubscription;
+  String _latestLink;
+  Uri _latestUri;
+  String _initialLink;
+  Uri _initialUri;
 
   final _key = new GlobalKey<FormState>();
   final _globalKey = new GlobalKey<ScaffoldState>();
@@ -35,6 +39,7 @@ class LoginState extends State<Login> {
     super.initState();
 
     getPref(); // Call getPref() method
+    initUniLinks();
   }
 
   @override
@@ -49,12 +54,11 @@ class LoginState extends State<Login> {
   void dispose() {
     // Clean up the controller when the widget is disposed.
     emailController.dispose();
-    _sub.cancel();
+    _linkStreamSubscription.cancel();
     super.dispose();
   }
 
   Widget _login() {
-       initUniLinks();
     if (_loggedIn == null || _loggedIn == false) {
       return Scaffold(
         backgroundColor: Colors.black,
@@ -356,29 +360,52 @@ class LoginState extends State<Login> {
     }
   }
 
-  Future<Null> initUniLinks() async {
-    // ... check initialLink
-    print("initUniLinks ");
-    try {
-      String initialLink = await getInitialLink();
-      print("initUniLinks link: " + initialLink);
-      // Parse the link and warn the user, if it is not correct,
-      // but keep in mind it could be `null`.
-    } on PlatformException {
-      // Handle exception by warning the user their action did not succeed
-      // return?
-      print("action did not succeed");
-    }
-
-    // Attach a listener to the stream
-    _sub = getLinksStream().listen((String link) {
-      // Parse the link and warn the user, if it is not correct
-      print("initUniLinks link: " + link);
-    }, onError: (err) {
-      // Handle exception by warning the user their action did not succeed
-      print("action did not succeed Error: " + err.toString());
+  /// An implementation using a [String] link
+  Future<void> initUniLinks() async {
+    // Attach a listener to the links stream
+    _linkStreamSubscription = getLinksStream().listen((String link) {
+      if (!mounted) return;
+      print('got link: $link');
+      closeWebView();
+      /*setState(() {
+        _latestLink = link ?? 'Unknown';
+        _latestUri = null;
+        try {
+          if (link != null) _latestUri = Uri.parse(link);
+        } on FormatException {}
+      });*/
+    }, onError: (Object err) {
+      if (!mounted) return;
+      print('got err: $err');
+      /*setState(() {
+        _latestLink = 'Failed to get latest link: $err.';
+        _latestUri = null;
+      });*/
     });
 
-    // NOTE: Don't forget to call _sub.cancel() in dispose()
+    // Get the latest link
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    try {
+      _initialLink = await getInitialLink();
+      print('initial link: $_initialLink');
+      await closeWebView();
+      //if (_initialLink != null) _initialUri = Uri.parse(_initialLink);
+    } on PlatformException {
+      _initialLink = 'Failed to get initial link.';
+      //_initialUri = null;
+    } on FormatException {
+      _initialLink = 'Failed to parse the initial link as Uri.';
+      //_initialUri = null;
+    }
+
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    /*if (!mounted) return;
+
+    setState(() {
+      _latestLink = _initialLink;
+      _latestUri = _initialUri;
+    });*/
   }
 }
