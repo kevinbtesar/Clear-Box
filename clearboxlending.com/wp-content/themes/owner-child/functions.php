@@ -6,7 +6,7 @@ function enqueue_parent_styles() {
 
 
 add_filter( 'bdpwr_code_email_text' , function( $text , $email , $code , $expiry ) {
-  date_default_timezone_set("America/Chicago");
+
   $newTime = date("D M j G:i:s T",strtotime(date("Y-m-d H:i:s")." +15 minutes"));
 
   return  "

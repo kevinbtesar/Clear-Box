@@ -176,7 +176,7 @@ class LoginState extends State<Login> {
                             _launchURL(Constants.LOST_PASSWORD);
                           },
                           child: Text(
-                            "Forgot Password?",
+                            "Create or Forgot Password",
                             style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold),
