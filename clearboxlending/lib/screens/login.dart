@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:device_info/device_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -176,7 +177,7 @@ class LoginState extends State<Login> {
                             _launchURL(Constants.LOST_PASSWORD);
                           },
                           child: Text(
-                            "Create or Forgot Password",
+                            "Forgot Password?",
                             style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold),
@@ -276,6 +277,18 @@ class LoginState extends State<Login> {
             //"fcm_token": "test_fcm_token"
           });
     } else {
+      String postBody = "";
+
+      int accessCodeExpiration;
+      if (accessCodeExpiration =
+          _preferences.getInt("access_code_expiration") ?? false) {
+        var now = new DateTime.now().toUtc().millisecondsSinceEpoch;
+        // 28800000=8 hours in milliseconds
+        if (now - accessCodeExpiration < 28800000) {
+          postBody = "access_code=" + _preferences.getString("access_code");
+        }
+      }
+
       response = await http.post(
           Constants.API_BASE_URL +
               "paypal/" +
@@ -284,7 +297,7 @@ class LoginState extends State<Login> {
               Constants.API_URL_KEY +
               "=" +
               Constants.API_URL_VALUE,
-          body: {});
+          body: {postBody});
     }
 
     // PHP ERRORS?
@@ -294,13 +307,33 @@ class LoginState extends State<Login> {
     if (response.body != null && response.body.isNotEmpty) {
       final data =
           jsonDecode(response.body); // <- break here to see body of PHP errors
+
+      apiStatus = data['api_status'];
+      apiMessage = data['api_message'];
+
       if (data['redirect_url'] != null) {
-        apiStatus = data['api_status'];
-        apiMessage = data['api_message'];
+        /*String deviceId = "";
+        //Future<String> _getId() async {
+        var deviceInfo = DeviceInfoPlugin();
+        if (Platform.isIOS) {
+          var iosDeviceInfo = await deviceInfo.iosInfo;
+          deviceId = iosDeviceInfo.identifierForVendor; // unique ID on iOS
+        } else {
+          var androidDeviceInfo = await deviceInfo.androidInfo;
+          deviceId = androidDeviceInfo.androidId; // unique ID on Android
+        }*/
 
         String url = data['redirect_url'];
-        _launchURL(url);
-      } else {
+        _launchURL(url /* + "&deviceId=" + deviceId*/);
+      } else if (data['access_code'] != null) {
+        var now = new DateTime.now().toUtc();
+        var eightHoursFromNow = now.add(new Duration(hours: 8));
+        _preferences.setString("access_code", data['access_code']);
+        _preferences.setInt(
+            "access_code_expiration", eightHoursFromNow.millisecondsSinceEpoch);
+      }
+
+      /* TODO DEAL WIN RETURN DATA
         _email = data['email'];
         String firstName = data['first_name'];
         String lastName = data['last_name'];
@@ -314,8 +347,8 @@ class LoginState extends State<Login> {
           });
         } else {
           print("fail");
-        }
-      }
+        }*/
+
     } else {
       print("fail");
     }
