@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
-import 'package:device_info/device_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -78,8 +76,8 @@ class LoginState extends State<Login> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        Image.network(
-                            "http://scratchpads.eu/sites/all/themes/scratchpads_eu/images/sponsor-logo-ner.png"),
+                        //Image.network(
+                        //    "http://scratchpads.eu/sites/all/themes/scratchpads_eu/images/sponsor-logo-ner.png"),
                         SizedBox(
                           height: 20,
                         ),
@@ -221,7 +219,7 @@ class LoginState extends State<Login> {
                                   color: Color(0xFFf7d426),
                                   onPressed: () {
                                     Navigator.push(
-                                      context,
+                                      this.context,
                                       MaterialPageRoute(
                                           builder: (context) => Register()),
                                     );
@@ -257,11 +255,17 @@ class LoginState extends State<Login> {
     }
   }
 
+/////////////////////////////////////// LOGIN /////////////////////////////
   login(String type) async {
     String apiStatus = "fail";
     String apiMessage = "No response found";
 
     http.Response response;
+
+    /**
+     * MANUAL LOGIN - START
+     */
+
     if (type == "manual") {
       response = await http.post(
           Constants.API_BASE_URL +
@@ -276,16 +280,26 @@ class LoginState extends State<Login> {
             "password": _password,
             //"fcm_token": "test_fcm_token"
           });
+
+      /**
+     * MANUAL LOGIN - END
+     */
+
     } else {
-      String postBody = "";
+      /**
+       * PAYPAL LOGIN - START
+       */
+
+      String accessToken = "";
 
       int accessCodeExpiration;
-      if (accessCodeExpiration =
-          _preferences.getInt("access_code_expiration") ?? false) {
+      if (_preferences.containsKey("access_token_expiration")) {
+        accessCodeExpiration = _preferences.getInt("access_token_expiration");
+
         var now = new DateTime.now().toUtc().millisecondsSinceEpoch;
         // 28800000=8 hours in milliseconds
-        if (now - accessCodeExpiration < 28800000) {
-          postBody = "access_code=" + _preferences.getString("access_code");
+        if (accessCodeExpiration - now > 0) {
+          accessToken = _preferences.getString("access_token");
         }
       }
 
@@ -297,13 +311,17 @@ class LoginState extends State<Login> {
               Constants.API_URL_KEY +
               "=" +
               Constants.API_URL_VALUE,
-          body: {postBody});
+          body: {"access_token": accessToken});
     }
+    /**
+     * PAYPAL LOGIN - END
+     */
 
     // PHP ERRORS?
     // Step 1. Comment out ob_get_clean() in api_main.php to see body of errors.
     // Step 2. Add break to `jsonDecode(response.body);`
     // Step 3. in Debug List of variables, find outer body variable. Right click, and copy value.
+
     if (response.body != null && response.body.isNotEmpty) {
       final data =
           jsonDecode(response.body); // <- break here to see body of PHP errors
@@ -311,35 +329,27 @@ class LoginState extends State<Login> {
       apiStatus = data['api_status'];
       apiMessage = data['api_message'];
 
-      if (data['redirect_url'] != null) {
-        /*String deviceId = "";
-        //Future<String> _getId() async {
-        var deviceInfo = DeviceInfoPlugin();
-        if (Platform.isIOS) {
-          var iosDeviceInfo = await deviceInfo.iosInfo;
-          deviceId = iosDeviceInfo.identifierForVendor; // unique ID on iOS
-        } else {
-          var androidDeviceInfo = await deviceInfo.androidInfo;
-          deviceId = androidDeviceInfo.androidId; // unique ID on Android
-        }*/
+      /**
+       * Redirect gotten back from Custom PayPal API **********
+       */
 
+      if (data['redirect_url'] != null && data['redirect_url'] != "") {
         String url = data['redirect_url'];
-        _launchURL(url /* + "&deviceId=" + deviceId*/);
-      } else if (data['access_code'] != null) {
-        var now = new DateTime.now().toUtc();
-        var eightHoursFromNow = now.add(new Duration(hours: 8));
-        _preferences.setString("access_code", data['access_code']);
-        _preferences.setInt(
-            "access_code_expiration", eightHoursFromNow.millisecondsSinceEpoch);
-      }
 
-      /* TODO DEAL WIN RETURN DATA
-        _email = data['email'];
+        _launchURL(url /* + "&deviceId=" + deviceId*/);
+      } else {
+        /**
+       * User Info gotten back from Custom PayPal API **********
+       */
+        var userInfo = jsonDecode(data['user_info']);
+
+        _email = userInfo['email'];
         String firstName = data['first_name'];
         String lastName = data['last_name'];
         String id = data['id'].toString();
         String phone = data['phone'];
         String userStatus = data['user_status'];
+
         if (apiStatus == 'success') {
           setState(() {
             _loggedIn = true;
@@ -347,8 +357,8 @@ class LoginState extends State<Login> {
           });
         } else {
           print("fail");
-        }*/
-
+        }
+      }
     } else {
       print("fail");
     }
@@ -400,35 +410,34 @@ class LoginState extends State<Login> {
       if (!mounted) return;
       print('got link: $link');
       closeWebView();
-      /*setState(() {
-        _latestLink = link ?? 'Unknown';
-        _latestUri = null;
-        try {
-          if (link != null) _latestUri = Uri.parse(link);
-        } on FormatException {}
-      });*/
     }, onError: (Object err) {
       if (!mounted) return;
       print('got err: $err');
-      /*setState(() {
-        _latestLink = 'Failed to get latest link: $err.';
-        _latestUri = null;
-      });*/
     });
 
     // Get the latest link
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
       _initialLink = await getInitialLink();
-      print('initial link: $_initialLink');
-      await closeWebView();
-      //if (_initialLink != null) _initialUri = Uri.parse(_initialLink);
+
+      if (_initialLink != null) {
+        print('initial link: $_initialLink');
+        List<String> accessToken = _initialLink.split("=");
+        accessToken = accessToken[1].split("&");
+        print("access_token: " + accessToken[0]);
+
+        var now = new DateTime.now().toUtc();
+        var eightHoursFromNow = now.add(new Duration(hours: 8));
+        _preferences.setString("access_token", accessToken[0]);
+        _preferences.setInt("access_token_expiration",
+            eightHoursFromNow.millisecondsSinceEpoch);
+
+        await closeWebView();
+      }
     } on PlatformException {
       _initialLink = 'Failed to get initial link.';
-      //_initialUri = null;
     } on FormatException {
       _initialLink = 'Failed to parse the initial link as Uri.';
-      //_initialUri = null;
     }
 
     // If the widget was removed from the tree while the asynchronous platform

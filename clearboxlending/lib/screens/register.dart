@@ -45,7 +45,7 @@ class _RegisterState extends State<Register> {
           "first_name": firstName,
           "last_name": lastName,
           "email": email,
-          "phone": phone,
+          //"phone": phone,
           "password": password,
           //"fcm_token": "test_fcm_token"
         });
@@ -191,7 +191,7 @@ class _RegisterState extends State<Register> {
                       ),
 
                       //card for Mobile TextFormField
-                      Card(
+                      /*Card(
                         elevation: 6.0,
                         child: TextFormField(
                           validator: (e) {
@@ -215,7 +215,7 @@ class _RegisterState extends State<Register> {
                           ),
                           keyboardType: TextInputType.number,
                         ),
-                      ),
+                      ),*/
 
                       //card for Password TextFormField
                       Card(

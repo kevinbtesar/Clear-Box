@@ -29,7 +29,9 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <!-- Accepts URIs that begin with YOUR_SCHEME://YOUR_HOST -->
                 <data
-                android:scheme="cbl2468642" />
+                android:scheme="cbl2468642"
+                android:host="clearboxlending.com"
+                android:pathPrefix="/login"  />
             </intent-filter>
 
         </activity>
