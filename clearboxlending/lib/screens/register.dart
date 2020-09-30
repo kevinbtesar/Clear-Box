@@ -186,12 +186,12 @@ class _RegisterState extends State<Register> {
                                 child: Icon(Icons.email, color: Colors.black),
                               ),
                               contentPadding: EdgeInsets.all(18),
-                              labelText: "Email"),
+                              labelText: "Email - IMPORTANT: Use same email as PayPal ID/Email"),
                         ),
                       ),
 
                       //card for Mobile TextFormField
-                      /*Card(
+                      Card(
                         elevation: 6.0,
                         child: TextFormField(
                           validator: (e) {
@@ -215,7 +215,7 @@ class _RegisterState extends State<Register> {
                           ),
                           keyboardType: TextInputType.number,
                         ),
-                      ),*/
+                      ),
 
                       //card for Password TextFormField
                       Card(

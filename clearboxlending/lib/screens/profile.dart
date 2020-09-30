@@ -254,7 +254,7 @@ class ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                                             mainAxisSize: MainAxisSize.min,
                                             children: <Widget>[
                                               new Text(
-                                                'Email',
+                                                'Email - IMPORTANT: Use same email as PayPal ID/Email',
                                                 style: TextStyle(
                                                     fontSize: 16.0,
                                                     fontWeight:

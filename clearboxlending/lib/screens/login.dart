@@ -36,9 +36,8 @@ class LoginState extends State<Login> {
   @override
   void initState() {
     super.initState();
-
-    getPref(); // Call getPref() method
     initUniLinks();
+    getPref(); // Call getPref() method
   }
 
   @override
@@ -53,7 +52,8 @@ class LoginState extends State<Login> {
   void dispose() {
     // Clean up the controller when the widget is disposed.
     emailController.dispose();
-    _linkStreamSubscription.cancel();
+    if(_linkStreamSubscription != null )
+      _linkStreamSubscription.cancel();
     super.dispose();
   }
 
@@ -299,10 +299,12 @@ class LoginState extends State<Login> {
         var now = new DateTime.now().toUtc().millisecondsSinceEpoch;
         // 28800000=8 hours in milliseconds
         if (accessCodeExpiration - now > 0) {
-          accessToken = _preferences.getString("access_token");
+          if (_preferences.containsKey("access_token") &&
+              _preferences.getString("access_token") != "fail")
+            accessToken = _preferences.getString("access_token");
         }
       }
-
+      
       response = await http.post(
           Constants.API_BASE_URL +
               "paypal/" +
@@ -346,14 +348,14 @@ class LoginState extends State<Login> {
         _email = userInfo['email'];
         String firstName = data['first_name'];
         String lastName = data['last_name'];
-        String id = data['id'].toString();
-        String phone = data['phone'];
-        String userStatus = data['user_status'];
+        //String id = data['id'].toString();
+        //String phone = data['phone'];
+        //String userStatus = data['user_status'];
 
         if (apiStatus == 'success') {
           setState(() {
             _loggedIn = true;
-            savePref(_email, firstName, lastName, id);
+            savePref(_email, firstName, lastName /*, id*/);
           });
         } else {
           print("fail");
@@ -377,13 +379,13 @@ class LoginState extends State<Login> {
         textColor: Colors.white);
   }
 
-  savePref(String email, String firstName, String lastName, String id) async {
+  savePref(
+      String email, String firstName, String lastName /*, String id*/) async {
     setState(() {
       _preferences.setBool("logged_in", _loggedIn);
       _preferences.setString("first_name", firstName);
       _preferences.setString("last_name", lastName);
       _preferences.setString("email", email);
-      _preferences.setString("id", id);
     });
   }
 
@@ -419,20 +421,37 @@ class LoginState extends State<Login> {
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
       _initialLink = await getInitialLink();
+      await closeWebView();
 
       if (_initialLink != null) {
+        String email = "";
+        String firstName = "";
+        String lastName = "";
+        String accessToken = "";
+
         print('initial link: $_initialLink');
-        List<String> accessToken = _initialLink.split("=");
-        accessToken = accessToken[1].split("&");
-        print("access_token: " + accessToken[0]);
+        List<String> accessTokenArray = _initialLink.split("=");
+        lastName = accessTokenArray[4];
+        accessTokenArray = accessTokenArray[1].split("&");
+        accessToken = accessTokenArray[0];
+        List<String> emailArray = _initialLink.split("=");
+        emailArray = emailArray[2].split("&");
+        email = emailArray[0];
+        List<String> firstNameArray = _initialLink.split("=");
+        firstNameArray = firstNameArray[3].split("&");
+        firstName = firstNameArray[0];
 
         var now = new DateTime.now().toUtc();
         var eightHoursFromNow = now.add(new Duration(hours: 8));
-        _preferences.setString("access_token", accessToken[0]);
+        _preferences.setString("access_token", accessToken);
         _preferences.setInt("access_token_expiration",
             eightHoursFromNow.millisecondsSinceEpoch);
 
-        await closeWebView();
+        setState(() {
+          _loggedIn = true;
+          savePref(email, firstName, lastName /*, id*/);
+        });
+    
       }
     } on PlatformException {
       _initialLink = 'Failed to get initial link.';
