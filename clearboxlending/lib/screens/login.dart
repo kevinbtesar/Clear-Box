@@ -52,8 +52,7 @@ class LoginState extends State<Login> {
   void dispose() {
     // Clean up the controller when the widget is disposed.
     emailController.dispose();
-    if(_linkStreamSubscription != null )
-      _linkStreamSubscription.cancel();
+    if (_linkStreamSubscription != null) _linkStreamSubscription.cancel();
     super.dispose();
   }
 
@@ -300,11 +299,12 @@ class LoginState extends State<Login> {
         // 28800000=8 hours in milliseconds
         if (accessCodeExpiration - now > 0) {
           if (_preferences.containsKey("access_token") &&
-              _preferences.getString("access_token") != "fail")
-            accessToken = _preferences.getString("access_token");
+              _preferences.getString("access_token") != "fail") {
+            //accessToken = _preferences.getString("access_token");
+          }
         }
       }
-      
+
       response = await http.post(
           Constants.API_BASE_URL +
               "paypal/" +
@@ -421,23 +421,30 @@ class LoginState extends State<Login> {
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
       _initialLink = await getInitialLink();
+      String initialLink = _initialLink;
+      getInitialLink().whenComplete(() => {
+            setState(() {
+              _initialLink = null;
+            })
+          });
+
       await closeWebView();
 
-      if (_initialLink != null) {
+      if (initialLink != null) {
         String email = "";
         String firstName = "";
         String lastName = "";
         String accessToken = "";
 
-        print('initial link: $_initialLink');
-        List<String> accessTokenArray = _initialLink.split("=");
+        print('initial link: $initialLink');
+        List<String> accessTokenArray = initialLink.split("=");
         lastName = accessTokenArray[4];
         accessTokenArray = accessTokenArray[1].split("&");
         accessToken = accessTokenArray[0];
-        List<String> emailArray = _initialLink.split("=");
+        List<String> emailArray = initialLink.split("=");
         emailArray = emailArray[2].split("&");
         email = emailArray[0];
-        List<String> firstNameArray = _initialLink.split("=");
+        List<String> firstNameArray = initialLink.split("=");
         firstNameArray = firstNameArray[3].split("&");
         firstName = firstNameArray[0];
 
@@ -451,7 +458,6 @@ class LoginState extends State<Login> {
           _loggedIn = true;
           savePref(email, firstName, lastName /*, id*/);
         });
-    
       }
     } on PlatformException {
       _initialLink = 'Failed to get initial link.';
