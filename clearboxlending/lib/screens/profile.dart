@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:clearboxlending/helpers/base_stateful.dart';
 import 'package:clearboxlending/navigation/menu_fragment.dart';
 import 'package:clearboxlending/navigation/zoom_scaffold.dart';
 import 'package:clearboxlending/helpers/constants.dart';
@@ -7,12 +8,8 @@ import 'package:clearboxlending/widgets/snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:image_picker/image_picker.dart';
 
-import 'package:async/async.dart';
-import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 //import 'package:path/path.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io' as Io;
@@ -21,27 +18,24 @@ import 'dart:convert';
 import 'dart:math' as Math;
 import 'package:path_provider/path_provider.dart';
 import 'package:image/image.dart' as Img;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Profile extends StatefulWidget {
-  final SharedPreferences preferences;
-  Profile(this.preferences);
-
   @override
-  ProfileState createState() => ProfileState(preferences);
+  ProfileState createState() => ProfileState();
 }
 
-class ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
+class ProfileState extends BaseStatefulState<Profile>
+    with SingleTickerProviderStateMixin {
   MenuController menuController;
-  Io.File _image;
   final picker = ImagePicker();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   String actualDropdown = stateDropdownItems[0];
   int actualChart = 0;
+  SharedPreferences preferences;
 
   bool _status = true;
   final FocusNode myFocusNode = FocusNode();
-
-  ProfileState(SharedPreferences preferences);
 
   @override
   void initState() {
@@ -50,6 +44,8 @@ class ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
     menuController = new MenuController(
       vsync: this,
     )..addListener(() => setState(() {}));
+
+    preferences = BaseStatefulState.preferences;
   }
 
   @override
@@ -59,7 +55,7 @@ class ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
     return ChangeNotifierProvider(
       builder: (context) => menuController,
       child: ZoomScaffold(
-        menuScreen: MenuScreen(widget.preferences),
+        menuScreen: MenuScreen(preferences),
         contentScreen: Layout(
             contentBuilder: (cc) => Scaffold(
                 key: _scaffoldKey,
@@ -194,6 +190,7 @@ class ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                                           if (e.isEmpty) {
                                             return "Please insert your first name";
                                           }
+                                          return "";
                                         },
                                         onSaved: (e) => firstName = e,
                                         style: TextStyle(
@@ -223,6 +220,7 @@ class ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                                           if (e.isEmpty) {
                                             return "Please insert your last name";
                                           }
+                                          return "";
                                         },
                                         onSaved: (e) => firstName = e,
                                         style: TextStyle(
@@ -274,6 +272,7 @@ class ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                                           if (e.isEmpty) {
                                             return "Please insert your email address";
                                           }
+                                          return "";
                                         },
                                         onSaved: (e) => firstName = e,
                                         style: TextStyle(
@@ -325,6 +324,7 @@ class ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                                           if (e.isEmpty) {
                                             return "Please insert your email address";
                                           }
+                                          return "";
                                         },
                                         onSaved: (e) => firstName = e,
                                         style: TextStyle(
@@ -376,6 +376,7 @@ class ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                                           if (e.isEmpty) {
                                             return "Please insert your street address";
                                           }
+                                          return "";
                                         },
                                         onSaved: (e) => firstName = e,
                                         style: TextStyle(
@@ -405,6 +406,7 @@ class ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                                           if (e.isEmpty) {
                                             return "Please insert your city";
                                           }
+                                          return "";
                                         },
                                         onSaved: (e) => firstName = e,
                                         style: TextStyle(
@@ -488,6 +490,7 @@ class ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                                                   if (e.isEmpty) {
                                                     return "Insert your zip code";
                                                   }
+                                                  return "";
                                                 },
                                                 onSaved: (e) => firstName = e,
                                                 style: TextStyle(
@@ -807,7 +810,6 @@ class ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                     ],
                   ),
                 ))),
-        preferences: widget.preferences,
         title: "Profile",
       ),
     );
@@ -918,7 +920,7 @@ class ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
           API_BASE_URL + API_MAIN + "?" + API_URL_KEY + "=" + API_URL_VALUE);
       var request = http.MultipartRequest('POST', uri);
       request.fields['action_flag'] = "3";
-      request.fields['id'] = widget.preferences.getString("id");
+      request.fields['id'] = BaseStatefulState.id;
       request.fields['meta_key'] = metaKey;
       //request.fields['name'] = name;
 

@@ -81,7 +81,6 @@ class _LoginState extends State<Login> {
       preferences.setString("name", name);
       preferences.setString("email", email);
       preferences.setString("id", id);
-      preferences.commit();
     });
   }
 

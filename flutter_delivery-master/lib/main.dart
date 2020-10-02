@@ -1,4 +1,3 @@
-import 'package:delivery/circular_image.dart';
 import 'package:delivery/menu_page.dart';
 import 'package:flutter/material.dart';
 import 'package:delivery/zoom_scaffold.dart';

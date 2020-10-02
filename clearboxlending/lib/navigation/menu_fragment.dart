@@ -1,17 +1,16 @@
-//import 'package:clearboxlending/navigation/circular_image.dart';
+import 'package:clearboxlending/helpers/base_stateful.dart';
 import 'package:clearboxlending/navigation/zoom_scaffold.dart';
 import 'package:clearboxlending/screens/dashboard.dart';
 import 'package:clearboxlending/screens/profile.dart';
-import 'package:clearboxlending/screens/register.dart';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MenuScreen extends StatelessWidget {
-  final SharedPreferences preferences;
   final String imageUrl =
       "https://celebritypets.net/wp-content/uploads/2016/12/Adriana-Lima.jpg";
+  final SharedPreferences preferences;
 
   MenuScreen(this.preferences);
 
@@ -21,9 +20,10 @@ class MenuScreen extends StatelessWidget {
 
     if (preferences.containsKey('first_name') &&
         preferences.getString('first_name') != "") {
-      nameString = "Welcome, " + preferences.getString('first_name');
+      nameString =
+          "Welcome, " + preferences.getString('first_name');
     } else {
-      nameString = "You're not logged in";
+      nameString = "ERROR - You're not logged in. Log out and log back in.";
     }
 
     return GestureDetector(
@@ -72,7 +72,7 @@ class MenuScreen extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => Dashboard(preferences)),
+                  MaterialPageRoute(builder: (context) => Dashboard()),
                 );
               },
               leading: Icon(
@@ -87,7 +87,7 @@ class MenuScreen extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => Profile(preferences)),
+                  MaterialPageRoute(builder: (context) => Profile()),
                 );
               },
               leading: Icon(

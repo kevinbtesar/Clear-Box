@@ -2,7 +2,7 @@ import 'package:clearboxlending/helpers/base_stateful.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:clearboxlending/screens/login.dart';
+
 
 class ZoomScaffold extends StatefulWidget {
   final Widget menuScreen;
@@ -21,7 +21,7 @@ class ZoomScaffold extends StatefulWidget {
   _ZoomScaffoldState createState() => new _ZoomScaffoldState();
 }
 
-class _ZoomScaffoldState extends State<ZoomScaffold>
+class _ZoomScaffoldState extends BaseStatefulState<ZoomScaffold>
     with TickerProviderStateMixin {
   Curve scaleDownCurve = new Interval(0.0, 0.3, curve: Curves.easeOut);
   Curve scaleUpCurve = new Interval(0.0, 1.0, curve: Curves.easeOut);
@@ -56,7 +56,7 @@ class _ZoomScaffoldState extends State<ZoomScaffold>
                 children: [
                   IconButton(
                     onPressed: () {
-                      signOut(widget.preferences);
+                      signOut();
                     },
                     icon: Icon(
                       Icons.power_settings_new,
@@ -150,26 +150,6 @@ class _ZoomScaffoldState extends State<ZoomScaffold>
     );
   }
 
-  //signOut(BuildContext context) async {
-  signOut(SharedPreferences preferences) {
-    //print("HERE signOut");
-    BaseStatefulState.loggedIn = false;
-    setState(() {
-      preferences.setString("id", null);
-      preferences.setString("email", null);
-      preferences.setString("first_name", null);
-      preferences.setString("last_name", null);
-      preferences.setString("phone", null);
-      preferences.setInt("user_status", 0);
-
-      //widget.signOut();
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => Login()),
-      );
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -250,7 +230,7 @@ class MenuController extends ChangeNotifier {
       });
   }
 
-  /**
+  /*
    * Commented out due to causing an error. 
    * This method included is how zoom_scaffold.dart come out of the box.
    * Started when zoom_scaffold.dart was added to dashboard.dart

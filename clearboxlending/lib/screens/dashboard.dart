@@ -2,17 +2,17 @@ import 'package:clearboxlending/helpers/base_stateful.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 import 'package:clearboxlending/navigation/zoom_scaffold.dart';
 import 'package:clearboxlending/navigation/menu_fragment.dart';
 import 'package:clearboxlending/widgets/snack_bar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Dashboard extends StatefulWidget {
   //final VoidCallback signOut;
-  final SharedPreferences _preferences;
-  Dashboard(/*this.signOut*/ this._preferences);
+
+  Dashboard(/*this.signOut this._preferences*/);
 
   @override
   MainMenuState createState() => MainMenuState();
@@ -21,15 +21,22 @@ class Dashboard extends StatefulWidget {
 class MainMenuState extends BaseStatefulState<Dashboard>
     with SingleTickerProviderStateMixin {
   MenuController menuController;
+  bool initFlag = false;
+  SharedPreferences preferences;
 
   @override
   void initState() {
     super.initState();
-    getPref();
+    if (!initFlag) {
+      initFlag = true;
+      menuController = new MenuController(
+        vsync: this,
+      )..addListener(() => setState(() {}));
 
-    menuController = new MenuController(
-      vsync: this,
-    )..addListener(() => setState(() {}));
+      // ignore: unnecessary_statements
+      () => checkLoggedIn();
+      preferences = BaseStatefulState.preferences;
+    }
   }
 
   @override
@@ -45,26 +52,8 @@ class MainMenuState extends BaseStatefulState<Dashboard>
   int currentIndex = 0;
   String selectedIndex = 'TAB: 0';
 
-  String email = "", first_name = "", last_name = "", id = "";
+  String email = "", firstName = "", lastName = "", id = "";
   TabController tabController;
-
-  SharedPreferences getPref() {
-    SharedPreferences preferences = widget._preferences;
-    setState(() {
-      if (preferences.containsKey("email")) {
-        id = preferences.getString("id") ?? "";
-        email = preferences.getString("email") ?? "";
-        first_name = preferences.getString("first_name") ?? "";
-        last_name = preferences.getString("last_name") ?? "";
-
-        print("id" + id);
-        print("email" + email);
-        print("first_name" + first_name);
-        print("last_name" + last_name);
-      }
-    });
-    return preferences;
-  }
 
   final List<List<double>> charts = [
     [2.9, 2.8, 3.4],
@@ -98,7 +87,7 @@ class MainMenuState extends BaseStatefulState<Dashboard>
     return ChangeNotifierProvider(
       builder: (context) => menuController,
       child: ZoomScaffold(
-          menuScreen: MenuScreen(this.getPref()),
+          menuScreen: MenuScreen(preferences),
           contentScreen: Layout(
             contentBuilder: (cc) => Scaffold(
                 body: StaggeredGridView.count(
@@ -273,7 +262,6 @@ class MainMenuState extends BaseStatefulState<Dashboard>
               ],
             )),
           ),
-          preferences: this.getPref(),
           title: "Dashboard"),
     );
   }

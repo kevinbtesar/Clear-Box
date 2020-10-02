@@ -123,6 +123,7 @@ class _RegisterState extends State<Register> {
                             if (e.isEmpty) {
                               return "Please insert a first name";
                             }
+                            return "";
                           },
                           onSaved: (e) => firstName = e,
                           style: TextStyle(
@@ -148,6 +149,7 @@ class _RegisterState extends State<Register> {
                             if (e.isEmpty) {
                               return "Please insert a last name";
                             }
+                            return "";
                           },
                           onSaved: (e) => lastName = e,
                           style: TextStyle(
@@ -173,6 +175,7 @@ class _RegisterState extends State<Register> {
                             if (e.isEmpty) {
                               return "Please insert an email";
                             }
+                            return "";
                           },
                           onSaved: (e) => email = e,
                           style: TextStyle(
@@ -186,7 +189,8 @@ class _RegisterState extends State<Register> {
                                 child: Icon(Icons.email, color: Colors.black),
                               ),
                               contentPadding: EdgeInsets.all(18),
-                              labelText: "Email - IMPORTANT: Use same email as PayPal ID/Email"),
+                              labelText:
+                                  "Email - IMPORTANT: Use same email as PayPal ID/Email"),
                         ),
                       ),
 
@@ -198,6 +202,7 @@ class _RegisterState extends State<Register> {
                             if (e.isEmpty) {
                               return "Please insert a phone number";
                             }
+                            return "";
                           },
                           onSaved: (e) => phone = e,
                           style: TextStyle(
