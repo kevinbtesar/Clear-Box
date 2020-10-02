@@ -1,3 +1,4 @@
+import 'package:clearboxlending/helpers/base_stateful.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -152,8 +153,8 @@ class _ZoomScaffoldState extends State<ZoomScaffold>
   //signOut(BuildContext context) async {
   signOut(SharedPreferences preferences) {
     //print("HERE signOut");
+    BaseStatefulState.loggedIn = false;
     setState(() {
-      preferences.setBool("logged_in", false);
       preferences.setString("id", null);
       preferences.setString("email", null);
       preferences.setString("first_name", null);

@@ -1,3 +1,4 @@
+import 'package:clearboxlending/helpers/base_stateful.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
@@ -17,7 +18,7 @@ class Dashboard extends StatefulWidget {
   MainMenuState createState() => MainMenuState();
 }
 
-class MainMenuState extends State<Dashboard>
+class MainMenuState extends BaseStatefulState<Dashboard>
     with SingleTickerProviderStateMixin {
   MenuController menuController;
 
@@ -50,7 +51,7 @@ class MainMenuState extends State<Dashboard>
   SharedPreferences getPref() {
     SharedPreferences preferences = widget._preferences;
     setState(() {
-      if (preferences.containsKey("logged_in")) {
+      if (preferences.containsKey("email")) {
         id = preferences.getString("id") ?? "";
         email = preferences.getString("email") ?? "";
         first_name = preferences.getString("first_name") ?? "";

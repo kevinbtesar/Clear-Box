@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:clearboxlending/helpers/base_stateful.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -18,20 +19,28 @@ class Login extends StatefulWidget {
   LoginState createState() => LoginState();
 }
 
-class LoginState extends State<Login> {
-  bool _loggedIn = false;
+class LoginState extends BaseStatefulState<Login> {
   bool _secureText = true;
   String _email, _password;
   SharedPreferences _preferences;
   StreamSubscription _linkStreamSubscription;
-  String _latestLink;
-  Uri _latestUri;
-  String _initialLink;
-  Uri _initialUri;
+  static bool usedUniLinkFlag = false;
 
   final _key = new GlobalKey<FormState>();
   final _globalKey = new GlobalKey<ScaffoldState>();
   final emailController = TextEditingController();
+
+  @override
+  void reassemble() {
+    super.reassemble();
+    print("reassemble");
+  }
+
+  @override
+  void didUpdateWidget(Login oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    print("didUpdateWidget");
+  }
 
   @override
   void initState() {
@@ -57,7 +66,8 @@ class LoginState extends State<Login> {
   }
 
   Widget _login() {
-    if (_loggedIn == null || _loggedIn == false) {
+    if (BaseStatefulState.loggedIn == null ||
+        BaseStatefulState.loggedIn == false) {
       return Scaffold(
         backgroundColor: Colors.black,
         body: Center(
@@ -299,8 +309,9 @@ class LoginState extends State<Login> {
         // 28800000=8 hours in milliseconds
         if (accessCodeExpiration - now > 0) {
           if (_preferences.containsKey("access_token") &&
-              _preferences.getString("access_token") != "fail") {
-            //accessToken = _preferences.getString("access_token");
+              _preferences.getString("access_token") != "fail") 
+          {
+            accessToken = _preferences.getString("access_token");
           }
         }
       }
@@ -353,10 +364,8 @@ class LoginState extends State<Login> {
         //String userStatus = data['user_status'];
 
         if (apiStatus == 'success') {
-          setState(() {
-            _loggedIn = true;
-            savePref(_email, firstName, lastName /*, id*/);
-          });
+          BaseStatefulState.loggedIn = true;
+          await savePref(_email, firstName, lastName /*, id*/);
         } else {
           print("fail");
         }
@@ -381,20 +390,23 @@ class LoginState extends State<Login> {
 
   savePref(
       String email, String firstName, String lastName /*, String id*/) async {
-    setState(() {
-      _preferences.setBool("logged_in", _loggedIn);
-      _preferences.setString("first_name", firstName);
-      _preferences.setString("last_name", lastName);
-      _preferences.setString("email", email);
-    });
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+
+    if (!mounted)
+      return;
+    else {
+      setState(() {
+        _preferences.setString("first_name", firstName);
+        _preferences.setString("last_name", lastName);
+        _preferences.setString("email", email);
+      });
+    }
   }
 
   getPref() async {
-    //SharedPreferences preferences = await SharedPreferences.getInstance();
     _preferences = await SharedPreferences.getInstance();
-    setState(() {
-      _loggedIn = _preferences.getBool("logged_in") ?? false;
-    });
   }
 
   _launchURL(String url) async {
@@ -406,37 +418,31 @@ class LoginState extends State<Login> {
   }
 
   /// An implementation using a [String] link
-  Future<void> initUniLinks() async {
+  Future<Null> initUniLinks() async {
+    await closeWebView();
+    String initialLink;
+
     // Attach a listener to the links stream
     _linkStreamSubscription = getLinksStream().listen((String link) {
-      if (!mounted) return;
-      print('got link: $link');
-      closeWebView();
+      //print('got link: $link');
+      initialLink = link;
     }, onError: (Object err) {
-      if (!mounted) return;
       print('got err: $err');
     });
 
     // Get the latest link
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
-      _initialLink = await getInitialLink();
-      String initialLink = _initialLink;
-      getInitialLink().whenComplete(() => {
-            setState(() {
-              _initialLink = null;
-            })
-          });
+      initialLink = await getInitialLink();
+      if (initialLink != null && !usedUniLinkFlag) {
+        usedUniLinkFlag = true;
 
-      await closeWebView();
-
-      if (initialLink != null) {
         String email = "";
         String firstName = "";
         String lastName = "";
         String accessToken = "";
 
-        print('initial link: $initialLink');
+        print('initial link: ' + initialLink);
         List<String> accessTokenArray = initialLink.split("=");
         lastName = accessTokenArray[4];
         accessTokenArray = accessTokenArray[1].split("&");
@@ -454,25 +460,13 @@ class LoginState extends State<Login> {
         _preferences.setInt("access_token_expiration",
             eightHoursFromNow.millisecondsSinceEpoch);
 
-        setState(() {
-          _loggedIn = true;
-          savePref(email, firstName, lastName /*, id*/);
-        });
+        BaseStatefulState.loggedIn = true;
+        await savePref(email, firstName, lastName /*, id*/);
       }
     } on PlatformException {
-      _initialLink = 'Failed to get initial link.';
+      initialLink = 'Failed to get initial link.';
     } on FormatException {
-      _initialLink = 'Failed to parse the initial link as Uri.';
+      initialLink = 'Failed to parse the initial link as Uri.';
     }
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    /*if (!mounted) return;
-
-    setState(() {
-      _latestLink = _initialLink;
-      _latestUri = _initialUri;
-    });*/
   }
 }
