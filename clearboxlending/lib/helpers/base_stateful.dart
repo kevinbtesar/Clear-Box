@@ -16,7 +16,7 @@ import 'package:clearboxlending/helpers/constants.dart' as Constants;
 abstract class BaseStatefulState<T extends StatefulWidget> extends State<T> {
   static StreamSubscription _linkStreamSubscription;
   static SharedPreferences preferences;
-  static String id, email, password, firstName, lastName;
+  static String userId, email, password, firstName, lastName, phone, userStatus;
   static bool loggedIn;
   static bool usedUniLinkFlag = false;
   static bool initFlag = false;
@@ -148,7 +148,9 @@ abstract class BaseStatefulState<T extends StatefulWidget> extends State<T> {
         firstName = nameArray[0];
         preferences.setString('first_name', firstName);
         lastName = nameArray[1];
-        id = "";
+        userId = userInfo['user_id'];
+        phone = userInfo['phone'];
+        userStatus = userInfo['user_status'];
         print(firstName + " " + preferences.getString("first_name"));
         //String id = data['id'].toString();
         //String phone = data['phone'];
@@ -169,27 +171,58 @@ abstract class BaseStatefulState<T extends StatefulWidget> extends State<T> {
     loginToast(apiMessage);
   }
 
-  //signOut(BuildContext context) async {
-  signOut() {
-    //print("HERE signOut");
-    /*BaseStatefulState.loggedIn = false;
-    setState(() {
-      preferences.setString("id", null);
-      preferences.setString("email", null);
-      preferences.setString("first_name", null);
-      preferences.setString("last_name", null);
-      preferences.setString("phone", null);
-      preferences.setInt("user_status", 0);
+  payout() async {
+    String apiStatus = "fail";
+    String apiMessage = "No response found";
 
-      
-    })*/
-    id = null;
+    http.Response response;
+
+    response = await http.post(
+        Constants.API_BASE_URL +
+            Constants.API_PAYPAL_PAYOUT +
+            "?" +
+            Constants.API_URL_KEY +
+            "=" +
+            Constants.API_URL_VALUE,
+        body: {
+          "amount": 1.toString(),
+          "email": email,
+          "user_id": userId,
+          //"fcm_token": "test_fcm_token"
+        });
+
+    if (response.body != null && response.body.isNotEmpty) {
+      final data =
+          jsonDecode(response.body); // <- break here to see body of PHP errors
+
+      apiStatus = data['api_status'];
+      apiMessage = data['api_message'];
+
+      if (apiStatus == 'success') {
+        print("success");
+      } else {
+        print("fail");
+      }
+    }
+
+    print(apiMessage);
+    loginToast(apiMessage);
+  }
+
+  setSharedPreferences() async {
+    preferences = await SharedPreferences.getInstance();
+  }
+
+  signOut() {
+    userId = null;
     email = null;
     firstName = null;
     lastName = null;
     password = null;
-    loggedIn = null;
+    phone = null;
+    userStatus = null;
 
+    loggedIn = null;
     checkLoggedIn();
   }
 
@@ -229,7 +262,16 @@ abstract class BaseStatefulState<T extends StatefulWidget> extends State<T> {
         firstNameArray = firstNameArray[3].split("&");
         firstName = firstNameArray[0];
         preferences.setString('first_name', firstName);
-        id = "";
+        List<String> idArray = initialLink.split("=");
+        idArray = idArray[5].split("&");
+        userId = idArray[0];
+        List<String> phoneArray = initialLink.split("=");
+        phoneArray = phoneArray[6].split("&");
+        userStatus = phoneArray[0];
+        List<String> userStatusArray = initialLink.split("=");
+        userStatusArray = userStatusArray[7].split("&");
+        userStatus = userStatusArray[0];
+
 
         var now = new DateTime.now().toUtc();
         var eightHoursFromNow = now.add(new Duration(hours: 8));
@@ -259,17 +301,26 @@ abstract class BaseStatefulState<T extends StatefulWidget> extends State<T> {
           MaterialPageRoute(builder: (context) => Dashboard()),
           (Route<dynamic> route) => false);
 
-      /*Navigator.pushReplacement(
+      /* Old method of navigation
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => Dashboard()),
       );*/
     }
   }
 
-  setSharedPreferences() async {
-    preferences = await SharedPreferences.getInstance();
-  }
-  /*savePref(
+  /*
+  
+  preferences.setString("id", null);
+  preferences.setString("email", null);
+  preferences.setString("first_name", null);
+  preferences.setString("last_name", null);
+  preferences.setString("phone", null);
+  preferences.setInt("user_status", 0);
+  TODO - preferences.setInt("user_address", 0);
+
+  
+  savePref(
     String email, String firstName, String lastName /*, String id*/) async {
     
     // If the widget was removed from the tree while the asynchronous platform
