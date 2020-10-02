@@ -141,18 +141,22 @@ abstract class BaseStatefulState<T extends StatefulWidget> extends State<T> {
         /**
        * User Info gotten back from Custom PayPal API **********
        */
-        var userInfo = jsonDecode(data['user_info']);
+        Map<String, dynamic> userInfo = jsonDecode(data['user_info']);
 
         email = userInfo['email'];
-        firstName = data['first_name'];
-        lastName = data['last_name'];
+        List<String> nameArray = userInfo['name'].split(" ");
+        firstName = nameArray[0];
+        preferences.setString('first_name', firstName);
+        lastName = nameArray[1];
         id = "";
+        print(firstName + " " + preferences.getString("first_name"));
         //String id = data['id'].toString();
         //String phone = data['phone'];
         //String userStatus = data['user_status'];
 
         if (apiStatus == 'success') {
-          BaseStatefulState.loggedIn = true;
+          loggedIn = true;
+          checkLoggedIn();
         } else {
           print("fail");
         }
@@ -224,6 +228,7 @@ abstract class BaseStatefulState<T extends StatefulWidget> extends State<T> {
         List<String> firstNameArray = initialLink.split("=");
         firstNameArray = firstNameArray[3].split("&");
         firstName = firstNameArray[0];
+        preferences.setString('first_name', firstName);
         id = "";
 
         var now = new DateTime.now().toUtc();

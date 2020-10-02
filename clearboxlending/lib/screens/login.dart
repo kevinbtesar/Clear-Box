@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'package:clearboxlending/screens/register.dart';
 import 'package:clearboxlending/helpers/constants.dart' as Constants;
+import 'package:tip_dialog/tip_dialog.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -19,9 +20,23 @@ class LoginState extends BaseStatefulState<Login> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      key: _globalKey,
-      body: _login(),
+    return Stack(
+      children: <Widget>[
+        Scaffold(
+          key: _globalKey,
+          body: _login(),
+        ),
+        TipDialogContainer(
+          duration: const Duration(seconds: 2),
+          outsideTouchable: true,
+          onOutsideTouch: (Widget tipDialog) {
+            if (tipDialog is TipDialog &&
+                tipDialog.type == TipDialogType.LOADING) {
+              TipDialogHelper.dismiss();
+            }
+          }
+        )
+      ],
     );
   }
 
@@ -70,6 +85,12 @@ class LoginState extends BaseStatefulState<Login> {
                       FlatButton(
                         onPressed: () {
                           login("paypal");
+
+                          TipDialogHelper.show(
+                              tipDialog: new TipDialog(
+                            type: TipDialogType.LOADING,
+                            tip: "Loading",
+                          ));
                         },
                         child: Image.asset(
                           'assets/images/connectwithpaypalbutton.png',
@@ -99,7 +120,6 @@ class LoginState extends BaseStatefulState<Login> {
                             if (e.isEmpty) {
                               return Constants.EMAIL_ERROR_EMPTY;
                             }
-                            return "";
                           },
                           onSaved: (e) => BaseStatefulState.email = e,
                           style: TextStyle(
@@ -125,7 +145,6 @@ class LoginState extends BaseStatefulState<Login> {
                             if (e.isEmpty) {
                               return Constants.PASS_ERROR_EMPTY;
                             }
-                            return "";
                           },
                           obscureText: _secureText,
                           onSaved: (e) => BaseStatefulState.password = e,
@@ -186,7 +205,15 @@ class LoginState extends BaseStatefulState<Login> {
                                 textColor: Colors.white,
                                 color: Color(0xFFf7d426),
                                 onPressed: () {
+                                  
                                   check();
+
+                                  TipDialogHelper.show(
+                                    tipDialog: new TipDialog(
+                                      type: TipDialogType.LOADING,
+                                      tip: "Loading",
+                                  ));
+
                                 }),
                           ),
                           SizedBox(

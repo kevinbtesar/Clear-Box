@@ -1,6 +1,6 @@
-import 'package:clearboxlending/helpers/base_stateful.dart';
 import 'package:clearboxlending/navigation/zoom_scaffold.dart';
 import 'package:clearboxlending/screens/dashboard.dart';
+import 'package:clearboxlending/screens/loan_set_amount.dart';
 import 'package:clearboxlending/screens/profile.dart';
 
 import 'package:flutter/material.dart';
@@ -99,7 +99,12 @@ class MenuScreen extends StatelessWidget {
                   style: TextStyle(fontSize: 14, color: Colors.white)),
             ),
             ListTile(
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoanSetAmount()),
+                );
+              },
               leading: Icon(
                 Icons.monetization_on,
                 color: Colors.white,
@@ -115,7 +120,7 @@ class MenuScreen extends StatelessWidget {
                 color: Colors.white,
                 size: 20,
               ),
-              title: Text('Walk Through',
+              title: Text('How it Works',
                   style: TextStyle(fontSize: 14, color: Colors.white)),
             ),
             Spacer(),

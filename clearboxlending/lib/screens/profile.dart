@@ -10,7 +10,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 
-//import 'package:path/path.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io' as Io;
 import 'dart:convert';
@@ -27,13 +26,13 @@ class Profile extends StatefulWidget {
 
 class ProfileState extends BaseStatefulState<Profile>
     with SingleTickerProviderStateMixin {
+
   MenuController menuController;
   final picker = ImagePicker();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   String actualDropdown = stateDropdownItems[0];
   int actualChart = 0;
   SharedPreferences preferences;
-
   bool _status = true;
   final FocusNode myFocusNode = FocusNode();
 
@@ -66,7 +65,7 @@ class ProfileState extends BaseStatefulState<Profile>
                       Column(
                         children: <Widget>[
                           new Container(
-                            height: 200.0,
+                            height: 170.0,
                             color: Colors.white,
                             child: new Column(
                               children: <Widget>[
@@ -88,7 +87,7 @@ class ProfileState extends BaseStatefulState<Profile>
                                                   shape: BoxShape.circle,
                                                   image: new DecorationImage(
                                                     image: new ExactAssetImage(
-                                                        'assets/images/as.png'),
+                                                        'assets/images/avatar2.png'),
                                                     fit: BoxFit.cover,
                                                   ),
                                                 )),
@@ -96,7 +95,7 @@ class ProfileState extends BaseStatefulState<Profile>
                                         ),
                                         Padding(
                                             padding: EdgeInsets.only(
-                                                top: 90.0, right: 100.0),
+                                                top: 90.0, right: 85.0),
                                             child: new Row(
                                               mainAxisAlignment:
                                                   MainAxisAlignment.center,
@@ -251,13 +250,13 @@ class ProfileState extends BaseStatefulState<Profile>
                                                 MainAxisAlignment.start,
                                             mainAxisSize: MainAxisSize.min,
                                             children: <Widget>[
-                                              new Text(
-                                                'Email - IMPORTANT: Use same email as PayPal ID/Email',
+                                              Text(
+                                                'Email - IMPORTANT:\nUse same email as PayPal ID/Email',
                                                 style: TextStyle(
                                                     fontSize: 16.0,
                                                     fontWeight:
-                                                        FontWeight.bold),
-                                              ),
+                                                        FontWeight.bold)),
+                                              
                                             ],
                                           ),
                                         ],
