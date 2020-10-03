@@ -1,7 +1,6 @@
 import 'package:clearboxlending/helpers/base_stateful.dart';
 import 'package:clearboxlending/navigation/menu_fragment.dart';
 import 'package:clearboxlending/navigation/zoom_scaffold.dart';
-import 'package:clearboxlending/screens/register.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
@@ -126,11 +125,15 @@ class LoanSetAmountState extends BaseStatefulState<LoanSetAmount>
                                                 textColor: Colors.white,
                                                 color: Color(0xFFf7d426),
                                                 onPressed: () {
+                                                  
                                                   TipDialogHelper.show(
                                                       tipDialog: new TipDialog(
                                                     type: TipDialogType.LOADING,
                                                     tip: "Loading",
                                                   ));
+                                                  
+                                                  payout();
+
                                                 }),
                                           ),
                                         ],

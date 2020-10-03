@@ -919,7 +919,7 @@ class ProfileState extends BaseStatefulState<Profile>
           API_BASE_URL + API_MAIN + "?" + API_URL_KEY + "=" + API_URL_VALUE);
       var request = http.MultipartRequest('POST', uri);
       request.fields['action_flag'] = "3";
-      request.fields['id'] = BaseStatefulState.id;
+      request.fields['user_id'] = BaseStatefulState.userId;
       request.fields['meta_key'] = metaKey;
       //request.fields['name'] = name;
 

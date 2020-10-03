@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tip_dialog/tip_dialog.dart';
 import 'package:uni_links/uni_links.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
@@ -52,7 +53,10 @@ abstract class BaseStatefulState<T extends StatefulWidget> extends State<T> {
     }
   }
 
-  /////////////////////////////////////// LOGIN /////////////////////////////
+  /*
+   * LOGIN LOGIC 
+   *
+   */
   login(String type) async {
     String apiStatus = "fail";
     String apiMessage = "No response found";
@@ -77,14 +81,9 @@ abstract class BaseStatefulState<T extends StatefulWidget> extends State<T> {
             "password": password,
             //"fcm_token": "test_fcm_token"
           });
-
-      /**
-     * MANUAL LOGIN - END
-     */
-
     } else {
       /**
-       * PAYPAL LOGIN - START
+       * PAYPAL ACCESS TOKEN LOGIN - START
        */
 
       String accessToken = "";
@@ -100,7 +99,7 @@ abstract class BaseStatefulState<T extends StatefulWidget> extends State<T> {
         if (difference > 0) {
           if (preferences.containsKey("access_token") &&
               preferences.getString("access_token") != "fail") {
-            accessToken = preferences.getString("access_token");
+            //accessToken = preferences.getString("access_token");
           }
         }
       }
@@ -116,7 +115,8 @@ abstract class BaseStatefulState<T extends StatefulWidget> extends State<T> {
           body: {"access_token": accessToken});
     }
     /**
-     * PAYPAL LOGIN - END
+     * PAYPAL ACCESS TOKENLOGIN - END
+     *
      */
 
     // PHP ERRORS?
@@ -171,6 +171,11 @@ abstract class BaseStatefulState<T extends StatefulWidget> extends State<T> {
     loginToast(apiMessage);
   }
 
+/*
+ * PAYOUT LOGIC - BEGIN
+ *
+ */
+
   payout() async {
     String apiStatus = "fail";
     String apiMessage = "No response found";
@@ -205,9 +210,15 @@ abstract class BaseStatefulState<T extends StatefulWidget> extends State<T> {
       }
     }
 
+    TipDialogHelper.dismiss();
     print(apiMessage);
     loginToast(apiMessage);
   }
+
+/*
+ * PAYOUT LOGIC - END
+ *
+ */
 
   setSharedPreferences() async {
     preferences = await SharedPreferences.getInstance();
@@ -250,8 +261,21 @@ abstract class BaseStatefulState<T extends StatefulWidget> extends State<T> {
         await closeWebView();
         String accessToken = "";
         print('initial link: ' + initialLink);
+        Uri uri = Uri.dataFromString(initialLink);
+        Map<String, String> uriObj = uri.queryParameters;
+        uriObj.forEach((k, v) {
+          print(k);
+          print(v);
+          if (k == 'accessToken') accessToken = v;
+          else if (k == 'email') email = v;
+          else if (k == 'first_name') firstName = v;
+          else if (k == 'last_name') lastName = v;
+          else if (k == 'user_id') userId = v;
+          else if (k == 'phone') phone = v;
+          else if (k == 'user_status') userStatus = v;
+        });
 
-        List<String> accessTokenArray = initialLink.split("=");
+        /*List<String> accessTokenArray = initialLink.split("=");
         lastName = accessTokenArray[4];
         accessTokenArray = accessTokenArray[1].split("&");
         accessToken = accessTokenArray[0];
@@ -270,8 +294,7 @@ abstract class BaseStatefulState<T extends StatefulWidget> extends State<T> {
         userStatus = phoneArray[0];
         List<String> userStatusArray = initialLink.split("=");
         userStatusArray = userStatusArray[7].split("&");
-        userStatus = userStatusArray[0];
-
+        userStatus = userStatusArray[0];*/
 
         var now = new DateTime.now().toUtc();
         var eightHoursFromNow = now.add(new Duration(hours: 8));
