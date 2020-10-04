@@ -264,37 +264,29 @@ abstract class BaseStatefulState<T extends StatefulWidget> extends State<T> {
         Uri uri = Uri.dataFromString(initialLink);
         Map<String, String> uriObj = uri.queryParameters;
         uriObj.forEach((k, v) {
-          print(k);
-          print(v);
-          if (k == 'accessToken') accessToken = v;
-          else if (k == 'email') email = v;
-          else if (k == 'first_name') firstName = v;
-          else if (k == 'last_name') lastName = v;
-          else if (k == 'user_id') userId = v;
-          else if (k == 'phone') phone = v;
+          //print(k);
+          //print(v);
+          if (k == 'accessToken')
+            accessToken = v;
+          else if (k == 'email')
+            email = v;
+          else if (k == 'first_name')
+            firstName = v;
+          else if (k == 'last_name')
+            lastName = v;
+          else if (k == 'user_id')
+            userId = v;
+          else if (k == 'phone')
+            phone = v;
           else if (k == 'user_status') userStatus = v;
         });
 
-        /*List<String> accessTokenArray = initialLink.split("=");
-        lastName = accessTokenArray[4];
-        accessTokenArray = accessTokenArray[1].split("&");
-        accessToken = accessTokenArray[0];
-        List<String> emailArray = initialLink.split("=");
-        emailArray = emailArray[2].split("&");
-        email = emailArray[0];
-        List<String> firstNameArray = initialLink.split("=");
-        firstNameArray = firstNameArray[3].split("&");
-        firstName = firstNameArray[0];
-        preferences.setString('first_name', firstName);
-        List<String> idArray = initialLink.split("=");
-        idArray = idArray[5].split("&");
-        userId = idArray[0];
-        List<String> phoneArray = initialLink.split("=");
-        phoneArray = phoneArray[6].split("&");
-        userStatus = phoneArray[0];
-        List<String> userStatusArray = initialLink.split("=");
-        userStatusArray = userStatusArray[7].split("&");
-        userStatus = userStatusArray[0];*/
+        print(accessToken);
+        print(email);
+        print(firstName);
+        print(lastName);
+        print(userId);
+        print(phone);
 
         var now = new DateTime.now().toUtc();
         var eightHoursFromNow = now.add(new Duration(hours: 8));
