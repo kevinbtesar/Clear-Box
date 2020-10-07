@@ -20,7 +20,7 @@ class LoanSetAmountState extends BaseStatefulState<LoanSetAmount>
   SharedPreferences preferences;
   final FocusNode myFocusNode = FocusNode();
 
-  double amount = 20;
+  double _amount = 20;
 
   @override
   void initState() {
@@ -79,7 +79,7 @@ class LoanSetAmountState extends BaseStatefulState<LoanSetAmount>
                                                   accent: Colors.green,
                                                   variant: Colors.purple,
                                                 ),
-                                                value: amount,
+                                                value: _amount,
                                                 min: 5,
                                                 max: 20,
                                                 onChanged: (value) {
@@ -93,7 +93,7 @@ class LoanSetAmountState extends BaseStatefulState<LoanSetAmount>
                                                   else
                                                     intValue = 20;
                                                   setState(() {
-                                                    amount =
+                                                    _amount =
                                                         intValue.toDouble();
                                                   });
                                                 },
@@ -101,7 +101,7 @@ class LoanSetAmountState extends BaseStatefulState<LoanSetAmount>
                                             ),
                                             SizedBox(width: 12),
                                             Text(
-                                              "\$${amount.round()}",
+                                              "\$${_amount.round()}",
                                             )
                                           ],
                                         ),
@@ -132,7 +132,7 @@ class LoanSetAmountState extends BaseStatefulState<LoanSetAmount>
                                                     tip: "Loading",
                                                   ));
                                                   
-                                                  payout();
+                                                  payout(_amount);
 
                                                 }),
                                           ),

@@ -176,7 +176,7 @@ abstract class BaseStatefulState<T extends StatefulWidget> extends State<T> {
  *
  */
 
-  payout() async {
+  payout(double amount) async {
     String apiStatus = "fail";
     String apiMessage = "No response found";
 
@@ -184,13 +184,14 @@ abstract class BaseStatefulState<T extends StatefulWidget> extends State<T> {
 
     response = await http.post(
         Constants.API_BASE_URL +
+            "paypal/" +
             Constants.API_PAYPAL_PAYOUT +
             "?" +
             Constants.API_URL_KEY +
             "=" +
             Constants.API_URL_VALUE,
         body: {
-          "amount": 1.toString(),
+          "amount": amount.toInt().toString(),
           "email": email,
           "user_id": userId,
           //"fcm_token": "test_fcm_token"
