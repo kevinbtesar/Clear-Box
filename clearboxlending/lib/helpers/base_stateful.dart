@@ -17,7 +17,21 @@ import 'package:clearboxlending/helpers/constants.dart' as Constants;
 abstract class BaseStatefulState<T extends StatefulWidget> extends State<T> {
   static StreamSubscription _linkStreamSubscription;
   static SharedPreferences preferences;
-  static String userId, email, password, firstName, lastName, phone, userStatus;
+  static String userId,
+      email,
+      password,
+      firstName,
+      lastName,
+      phone,
+      userStatus,
+      streetAddress,
+      locality,
+      region,
+      postalCode,
+      country,
+      paypalEmailVerified,
+      paypalPayerId,
+      verifiedPaypalAccount;
   static bool loggedIn;
   static bool usedUniLinkFlag = false;
   static bool initFlag = false;
@@ -99,7 +113,8 @@ abstract class BaseStatefulState<T extends StatefulWidget> extends State<T> {
         if (difference > 0) {
           if (preferences.containsKey("access_token") &&
               preferences.getString("access_token") != "fail") {
-            //accessToken = preferences.getString("access_token");
+            // Comment out the following line if testing deep linking is needed
+            accessToken = preferences.getString("access_token");
           }
         }
       }
@@ -115,7 +130,7 @@ abstract class BaseStatefulState<T extends StatefulWidget> extends State<T> {
           body: {"access_token": accessToken});
     }
     /**
-     * PAYPAL ACCESS TOKENLOGIN - END
+     * PAYPAL ACCESS TOKEN LOGIN - END
      *
      */
 
@@ -134,27 +149,35 @@ abstract class BaseStatefulState<T extends StatefulWidget> extends State<T> {
       /**
        * Redirect gotten back from Custom PayPal API **********
        */
-
       if (data['redirect_url'] != null && data['redirect_url'] != "") {
         launchURL(data['redirect_url']);
       } else {
         /**
-       * User Info gotten back from Custom PayPal API **********
-       */
+         * User Info gotten back from Custom PayPal API **********
+         */
         Map<String, dynamic> userInfo = jsonDecode(data['user_info']);
+
+        // userId, email, password, firstName, lastName, phone, userStatus, streetAddress, locality,
+        // region, postalCode, country, paypalEmailVerified, paypalPayerId, verifiedPaypalAccount;
 
         email = userInfo['email'];
         List<String> nameArray = userInfo['name'].split(" ");
         firstName = nameArray[0];
         preferences.setString('first_name', firstName);
         lastName = nameArray[1];
-        userId = userInfo['user_id'];
+        userId = userInfo['ID'];
         phone = userInfo['phone'];
         userStatus = userInfo['user_status'];
-        print(firstName + " " + preferences.getString("first_name"));
-        //String id = data['id'].toString();
-        //String phone = data['phone'];
-        //String userStatus = data['user_status'];
+        streetAddress = userInfo['street_address'];
+        locality = userInfo['locality'];
+        region = userInfo['region'];
+        postalCode = userInfo['postal_code'];
+        country = userInfo['country'];
+        paypalEmailVerified = userInfo['paypal_email_verified'];
+        paypalPayerId = userInfo['paypal_payer_id'];
+        verifiedPaypalAccount = userInfo['verified_paypal_account'];
+
+        //print(firstName + " " + preferences.getString("first_name"));
 
         if (apiStatus == 'success') {
           loggedIn = true;
@@ -179,9 +202,9 @@ abstract class BaseStatefulState<T extends StatefulWidget> extends State<T> {
   payout(double amount) async {
     String apiStatus = "fail";
     String apiMessage = "No response found";
+    print("userId: " + userId + " email: " + email);
 
     http.Response response;
-
     response = await http.post(
         Constants.API_BASE_URL +
             "paypal/" +
@@ -225,6 +248,8 @@ abstract class BaseStatefulState<T extends StatefulWidget> extends State<T> {
     preferences = await SharedPreferences.getInstance();
   }
 
+// userId, email, password, firstName, lastName, phone, userStatus, streetAddress, locality,
+// region, postalCode, country, paypalEmailVerified, paypalPayerId, verifiedPaypalAccount;
   signOut() {
     userId = null;
     email = null;
@@ -233,6 +258,17 @@ abstract class BaseStatefulState<T extends StatefulWidget> extends State<T> {
     password = null;
     phone = null;
     userStatus = null;
+    streetAddress = null;
+    locality = null;
+    region = null;
+    postalCode = null;
+    country = null;
+    paypalEmailVerified = null;
+    paypalPayerId = null;
+    verifiedPaypalAccount = null;
+
+    preferences.setString("access_token", "");
+    preferences.setInt("access_token_expiration", 0);
 
     loggedIn = null;
     checkLoggedIn();
@@ -267,7 +303,9 @@ abstract class BaseStatefulState<T extends StatefulWidget> extends State<T> {
         uriObj.forEach((k, v) {
           //print(k);
           //print(v);
-          if (k == 'accessToken')
+          // userId, email, password, firstName, lastName, phone, userStatus, streetAddress, locality,
+          // region, postalCode, country, paypalEmailVerified, paypalPayerId, verifiedPaypalAccount;
+          if (k == 'access_token')
             accessToken = v;
           else if (k == 'email')
             email = v;
@@ -279,29 +317,49 @@ abstract class BaseStatefulState<T extends StatefulWidget> extends State<T> {
             userId = v;
           else if (k == 'phone')
             phone = v;
-          else if (k == 'user_status') userStatus = v;
+          else if (k == 'user_status')
+            userStatus = v;
+          else if (k == 'street_address')
+            streetAddress = v;
+          else if (k == 'locality')
+            locality = v;
+          else if (k == 'region')
+            region = v;
+          else if (k == 'country')
+            country = v;
+          else if (k == 'paypal_email_verified')
+            paypalEmailVerified = v;
+          else if (k == 'paypal_payer_id')
+            paypalPayerId = v;
+          else if (k == 'verified_paypal_account') verifiedPaypalAccount = v;
         });
 
-        print(accessToken);
-        print(email);
-        print(firstName);
-        print(lastName);
-        print(userId);
-        print(phone);
+        if (accessToken != null &&
+            accessToken != "" &&
+            userId != null &&
+            userId != "") {
+          var now = new DateTime.now().toUtc();
+          var eightHoursFromNow = now.add(new Duration(hours: 8));
+          preferences.setString("access_token", accessToken);
+          preferences.setInt("access_token_expiration",
+              eightHoursFromNow.millisecondsSinceEpoch);
 
-        var now = new DateTime.now().toUtc();
-        var eightHoursFromNow = now.add(new Duration(hours: 8));
-        preferences.setString("access_token", accessToken);
-        preferences.setInt("access_token_expiration",
-            eightHoursFromNow.millisecondsSinceEpoch);
+          loggedIn = true;
+        } else {
+          // There was an issue getting either the access token or the user ID from deep linking
 
-        loggedIn = true;
+          loggedIn = false;
+          print('fail');
+        }
+
         checkLoggedIn();
       }
     } on PlatformException {
       initialLink = 'Failed to get initial link.';
+      print('fail');
     } on FormatException {
       initialLink = 'Failed to parse the initial link as Uri.';
+      print('fail');
     }
   }
 
