@@ -12,8 +12,11 @@ const API_BASE_URL = "https://clearboxlending.com/api/";
 const API_URL_KEY = "password_secret";
 const API_URL_VALUE = "clearBoxLendingIsTheBestLendingCompanyEVER2468642";
 const API_MAIN = "api_main.php";
-const API_PAYPAL = "api_paypal.php";
-const API_PAYPAL_PAYOUT = "payout_paypal.php";
+const API_PAYPAL_AUTHENTICATION = "api_authentication.php";
+const API_PAYPAL_PAYOUT = "api_payout.php";
+const API_PAYPAL_AUTHORIZATION = "api_payout.php";
+const API_PAYPAL_CAPTURE = "api_payout.php";
+
 
 // Email Reset API related
 const LOST_PASSWORD =

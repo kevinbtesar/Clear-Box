@@ -122,7 +122,7 @@ abstract class BaseStatefulState<T extends StatefulWidget> extends State<T> {
       response = await http.post(
           Constants.API_BASE_URL +
               "paypal/" +
-              Constants.API_PAYPAL +
+              Constants.API_PAYPAL_AUTHENTICATION +
               "?" +
               Constants.API_URL_KEY +
               "=" +
@@ -165,19 +165,19 @@ abstract class BaseStatefulState<T extends StatefulWidget> extends State<T> {
         firstName = nameArray[0];
         preferences.setString('first_name', firstName);
         lastName = nameArray[1];
-        userId = userInfo['ID'];
+        userId = userInfo['ID'].toString();
         phone = userInfo['phone'];
-        userStatus = userInfo['user_status'];
-        streetAddress = userInfo['street_address'];
-        locality = userInfo['locality'];
-        region = userInfo['region'];
-        postalCode = userInfo['postal_code'];
-        country = userInfo['country'];
-        paypalEmailVerified = userInfo['paypal_email_verified'];
-        paypalPayerId = userInfo['paypal_payer_id'];
-        verifiedPaypalAccount = userInfo['verified_paypal_account'];
-
-        //print(firstName + " " + preferences.getString("first_name"));
+        userStatus = userInfo['data']['user_status'];
+        streetAddress = userInfo['address']['street_address'];
+        locality = userInfo['address']['locality'];
+        region = userInfo['address']['region'];
+        postalCode = userInfo['address']['postal_code'];
+        country = userInfo['address']['country'];
+        paypalEmailVerified = userInfo['email_verified'];
+        paypalPayerId = userInfo['payer_id'];
+        verifiedPaypalAccount = userInfo['verified_account'];
+        //print("HERE " + jsonEncode(userInfo));
+        //print("HERE " + userId);
 
         if (apiStatus == 'success') {
           loggedIn = true;
